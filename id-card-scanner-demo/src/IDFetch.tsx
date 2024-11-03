@@ -132,11 +132,12 @@ const IDFetch: React.FC = () => {
   };
 
   // Filter logic for search
-  const filteredItems = idList.filter(item => 
-    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.studentNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.major.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredItems = idList.filter(item => {
+    const nameMatch = item.name.toLowerCase().includes(searchTerm.toLowerCase());
+    const studentNumberMatch = item.studentNumber.toString().includes(searchTerm);
+    const majorMatch = item.major ? item.major.toLowerCase().includes(searchTerm.toLowerCase()) : false; // Ensure item.major exists
+    return nameMatch || studentNumberMatch || majorMatch;
+  });  
 
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
   const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -200,7 +201,7 @@ const IDFetch: React.FC = () => {
           </div>
 
           <div className="flex-1 md:w-1/2 p-2">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Student Informations</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Student List</h2>
             <input
               type="text"
               placeholder="Search..."
@@ -300,7 +301,7 @@ const IDFetch: React.FC = () => {
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
             <div className="bg-white rounded-lg p-4 shadow-md">
-              <h2 className="text-xl font-semibold mb-2">Add New ID</h2>
+              <h2 className="text-xl font-semibold mb-2">Add New Student</h2>
               <input
                 type="text"
                 value={newName}
@@ -324,7 +325,7 @@ const IDFetch: React.FC = () => {
               />
               <div className="flex justify-end">
                 <button onClick={handleAdd} className="px-4 py-2 bg-[#4896ac] text-white rounded-lg hover:bg-[#326979]">
-                  Add ID
+                  Add Student
                 </button>
                 <button onClick={() => setIsModalOpen(false)} className="ml-2 px-4 py-2 bg-gray-300 rounded-lg">
                   Cancel
@@ -338,4 +339,4 @@ const IDFetch: React.FC = () => {
   );
 };
 
-export default IDFetch;
+export default IDFetch; 
