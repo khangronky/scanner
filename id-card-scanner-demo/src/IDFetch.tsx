@@ -200,7 +200,7 @@ const IDFetch: React.FC = () => {
           </div>
 
           <div className="flex-1 md:w-1/2 p-2">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Captured ID Information</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Student Informations</h2>
             <input
               type="text"
               placeholder="Search..."
