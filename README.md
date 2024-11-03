@@ -50,4 +50,4 @@ This project is a web application for capturing ID information using a webcam.
 
 ## License
 
-This project is licensed under the MIT License.
+This project is provided as is, I will not be responsible if you somehow manage to burn down your entire house or get hit by a plane while using my program.
