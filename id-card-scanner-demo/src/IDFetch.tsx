@@ -7,7 +7,11 @@ interface IDInfo {
 }
 
 const IDFetch: React.FC = () => {
-  const [idList, setIdList] = useState<IDInfo[]>([]);
+  const [idList, setIdList] = useState<IDInfo[]>(() => {
+    // Retrieve initial data from local storage
+    const storedList = localStorage.getItem('idList');
+    return storedList ? JSON.parse(storedList) : [];
+  });
   const [error, setError] = useState<string | null>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editName, setEditName] = useState<string>('');
@@ -33,6 +37,11 @@ const IDFetch: React.FC = () => {
         setError("Could not access the webcam.");
       });
   }, []);
+
+  useEffect(() => {
+    // Save idList to local storage whenever it changes
+    localStorage.setItem('idList', JSON.stringify(idList));
+  }, [idList]);
 
   const captureFrame = async () => {
     if (canvasRef.current && videoRef.current) {
@@ -77,7 +86,9 @@ const IDFetch: React.FC = () => {
   };
 
   const handleDelete = (index: number) => {
-    const updatedList = idList.filter((_, i) => i !== index);
+    // Calculate the index in the overall idList based on current page
+    const actualIndex = (currentPage - 1) * itemsPerPage + index;
+    const updatedList = idList.filter((_, i) => i !== actualIndex);
     setIdList(updatedList);
   };
 
@@ -188,14 +199,11 @@ const IDFetch: React.FC = () => {
                         </td>
                         <td className="py-2 px-4 border">
                           {editIndex === index ? (
-                            <>
-                              <button onClick={handleSave} className="px-2 py-1 bg-green-500 text-white rounded-lg hover:bg-green-600">Save</button>
-                              <button onClick={() => setEditIndex(null)} className="ml-2 px-2 py-1 bg-gray-400 text-white rounded-lg hover:bg-gray-500">Cancel</button>
-                            </>
+                            <button onClick={handleSave} className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">Save</button>
                           ) : (
                             <>
-                              <button onClick={() => handleEdit(index)} className="px-2 py-1 bg-blue-500 text-white rounded-lg hover:bg-blue-600">Edit</button>
-                              <button onClick={() => handleDelete(index)} className="ml-2 px-2 py-1 bg-red-500 text-white rounded-lg hover:bg-red-600">Delete</button>
+                              <button onClick={() => handleEdit(index)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 mr-2">Edit</button>
+                              <button onClick={() => handleDelete(index)} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Delete</button>
                             </>
                           )}
                         </td>
@@ -203,6 +211,8 @@ const IDFetch: React.FC = () => {
                     ))}
                   </tbody>
                 </table>
+  
+                {/* Pagination Controls */}
                 <div className="flex justify-between items-center mt-4">
                   <button onClick={prevPage} disabled={currentPage === 1} className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 disabled:opacity-50">Previous</button>
                   <span className="text-lg">Page {currentPage} of {totalPages}</span>
