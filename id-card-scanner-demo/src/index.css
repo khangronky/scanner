@@ -18,3 +18,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.table-cell {
+  max-width: 200px; /* Adjust to your desired width */
+  overflow: hidden; /* Hides overflow */
+  text-overflow: ellipsis; /* Adds "..." for overflowed text */
+  white-space: nowrap; /* Prevents text from wrapping */
+}
+
