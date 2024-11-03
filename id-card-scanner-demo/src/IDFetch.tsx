@@ -1,14 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPencilAlt, faTrash, faSave, faCircleXmark} from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
 interface IDInfo {
   name: string;
   studentNumber: string;
+  major: string;
 }
 
 const IDFetch: React.FC = () => {
   const [idList, setIdList] = useState<IDInfo[]>(() => {
-    // Retrieve initial data from local storage
     const storedList = localStorage.getItem('idList');
     return storedList ? JSON.parse(storedList) : [];
   });
@@ -16,11 +18,14 @@ const IDFetch: React.FC = () => {
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editName, setEditName] = useState<string>('');
   const [editStudentNumber, setEditStudentNumber] = useState<string>('');
+  const [editMajor, setEditMajor] = useState<string>('');
   const [newName, setNewName] = useState<string>('');
   const [newStudentNumber, setNewStudentNumber] = useState<string>('');
-
+  const [newMajor, setNewMajor] = useState<string>('');
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const [searchTerm, setSearchTerm] = useState<string>(''); // State for search term
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const itemsPerPage = 7;
+  const itemsPerPage = 13;
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -39,7 +44,6 @@ const IDFetch: React.FC = () => {
   }, []);
 
   useEffect(() => {
-    // Save idList to local storage whenever it changes
     localStorage.setItem('idList', JSON.stringify(idList));
   }, [idList]);
 
@@ -49,15 +53,27 @@ const IDFetch: React.FC = () => {
       if (context) {
         context.drawImage(videoRef.current, 0, 0, canvasRef.current.width, canvasRef.current.height);
         const imageData = canvasRef.current.toDataURL('image/png');
-
+  
         try {
           const response = await axios.post('http://localhost:5000/capture', { imageData });
           if (response.data.error) {
             setError(response.data.error);
           } else {
             const newIDInfo = response.data;
-            setIdList((prevList) => [...prevList, newIDInfo]);
-            setError(null);
+  
+            // Check for duplicates before adding
+            const isDuplicate = idList.some(item => 
+              item.name === newIDInfo.name && 
+              item.studentNumber === newIDInfo.studentNumber &&
+              item.major === newIDInfo.major
+            );
+  
+            if (isDuplicate) {
+              setError("This ID already exists in the list.");
+            } else {
+              setIdList((prevList) => [...prevList, newIDInfo]);
+              setError(null);
+            }
           }
         } catch (err) {
           console.error("Error sending data to server: ", err);
@@ -71,44 +87,60 @@ const IDFetch: React.FC = () => {
     setEditIndex(index);
     setEditName(idList[index].name);
     setEditStudentNumber(idList[index].studentNumber);
+    setEditMajor(idList[index].major);
   };
 
   const handleSave = () => {
     if (editIndex !== null) {
       const updatedList = idList.map((item, index) => (
-        index === editIndex ? { name: editName, studentNumber: editStudentNumber } : item
+        index === editIndex ? { name: editName, studentNumber: editStudentNumber, major: editMajor } : item
       ));
       setIdList(updatedList);
       setEditIndex(null);
       setEditName('');
       setEditStudentNumber('');
+      setEditMajor('');
     }
   };
 
   const handleDelete = (index: number) => {
-    // Calculate the index in the overall idList based on current page
-    const actualIndex = (currentPage - 1) * itemsPerPage + index;
-    const updatedList = idList.filter((_, i) => i !== actualIndex);
+    const updatedList = idList.filter((_, i) => i !== index);
     setIdList(updatedList);
   };
 
   const handleAdd = () => {
-    if (newName && newStudentNumber) {
-      setIdList([...idList, { name: newName, studentNumber: newStudentNumber }]);
-      setNewName('');
-      setNewStudentNumber('');
+    if (newName && newStudentNumber && newMajor) {
+      const isDuplicate = idList.some(item =>
+        item.name === newName &&
+        item.studentNumber === newStudentNumber &&
+        item.major === newMajor
+      );
+
+      if (isDuplicate) {
+        setError("This ID already exists in the list.");
+      } else {
+        setIdList([...idList, { name: newName, studentNumber: newStudentNumber, major: newMajor }]);
+        setNewName('');
+        setNewStudentNumber('');
+        setNewMajor('');
+        setIsModalOpen(false);
+        setError(null);
+      }
     } else {
-      setError("Please enter both name and student number.");
+      setError("Please enter name, student number, and major.");
     }
   };
 
-  // Calculate the number of pages
-  const totalPages = Math.ceil(idList.length / itemsPerPage);
+  // Filter logic for search
+  const filteredItems = idList.filter(item => 
+    item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.studentNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.major.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  // Get current items based on the current page
-  const currentItems = idList.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
 
-  // Pagination controls
   const nextPage = () => {
     if (currentPage < totalPages) {
       setCurrentPage(currentPage + 1);
@@ -121,22 +153,21 @@ const IDFetch: React.FC = () => {
     }
   };
 
-  // CSV Export function
   const exportToCSV = () => {
-    const headers = ["Name", "Student Number"];
+    const headers = ["Name", "Student Number", "Major/Program"];
     const csvRows = [
-      headers.join(','), // Add headers
-      ...idList.map(item => `${item.name},${item.studentNumber}`) // Map ID info to CSV format
+      headers.join(','),
+      ...idList.map(item => `${item.name},${item.studentNumber},${item.major}`)
     ];
 
-    const csvString = csvRows.join('\n'); // Join rows with newline
+    const csvString = csvRows.join('\n');
     const blob = new Blob([csvString], { type: 'text/csv' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.setAttribute('href', url);
     a.setAttribute('download', 'Student_Info_List.csv');
     a.click();
-    URL.revokeObjectURL(url); // Clean up URL object
+    URL.revokeObjectURL(url);
   };
 
   return (
@@ -144,117 +175,167 @@ const IDFetch: React.FC = () => {
       <div className="container mx-auto p-6 bg-[#e8f5fc] bg-opacity-80 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">NEO Culture Technology ID Scanner</h1>
         <div className="flex flex-col md:flex-row">
-          {/* Scanner Display */}
           <div className="flex-1 md:w-1/2 p-2">
-            <h2 className="text-xl font-semibold text-gray-800 mb-2">Scanner Display</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-2">Student ID Here</h2>
             <video ref={videoRef} autoPlay className="w-full h-auto rounded-lg shadow-md border border-gray-300"></video>
             <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
-            <div className="text-center mt-4">
-              <button onClick={captureFrame} className="px-4 py-2 bg-[#4896ac] text-white rounded-lg hover:bg-[#326979] transition">
-                Capture and Display ID
+            <div className="flex flex-col sm:flex-row justify-center mt-4">
+              <button 
+                onClick={captureFrame} 
+                className="mb-2 sm:mb-0 sm:mr-4 px-4 py-2 bg-[#4896ac] text-white rounded-lg hover:bg-[#326979] transition">
+                Capture ID
+              </button>
+              <button 
+                onClick={() => setIsModalOpen(true)} 
+                className="mb-2 sm:mb-0 sm:mr-4 px-8 py-2 bg-[#4896ac] text-white rounded-lg hover:bg-[#326979] transition">
+                Add New ID Manually
+              </button>
+              <button 
+                onClick={exportToCSV} 
+                className="mb-2 sm:mb-0 px-4 py-2 bg-[#4896ac] text-white rounded-lg hover:bg-[#326979] transition">
+                Export to CSV
               </button>
             </div>
             {error && <p className="text-red-600 mt-2">{error}</p>}
           </div>
-  
-          {/* ID Information Table */}
+
           <div className="flex-1 md:w-1/2 p-2">
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Captured ID Information</h2>
-            {idList.length > 0 && (
-              <div className="mt-2">
-                <table className="min-w-full bg-white border border-gray-300 rounded-lg">
-                  <thead>
-                    <tr className="bg-[#4896ac] text-white">
-                      <th className="py-2 px-4 border">Full Name</th>
-                      <th className="py-2 px-4 border">Student Number</th>
-                      <th className="py-2 px-4 border">Actions</th>
+            <input
+              type="text"
+              placeholder="Search..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="mb-4 p-2 border border-gray-300 rounded-lg w-full"
+            />
+            {filteredItems.length > 0 && (
+              <div className="mt-2 overflow-x-auto">
+              <table className="min-w-full bg-white border border-gray-300 rounded-lg">
+                <thead>
+                  <tr className="bg-[#4896ac] text-white">
+                    <th className="py-2 px-4 border">Full Name</th>
+                    <th className="py-2 px-4 border">Student Number</th>
+                    <th className="py-2 px-4 border">Major/Program</th>
+                    <th className="py-2 px-4 border">Actions</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {currentItems.map((idInfo, index) => (
+                    <tr key={index} className="hover:bg-gray-100">
+                      <td className="py-1 px-4 border table-cell">
+                        {editIndex === (currentPage - 1) * itemsPerPage + index ? (
+                          <input
+                            type="text"
+                            value={editName}
+                            onChange={(e) => setEditName(e.target.value)}
+                            className="w-full p-2 border rounded-lg"
+                          />
+                        ) : (
+                          idInfo.name
+                        )}
+                      </td>
+                      <td className="py-1 px-4 border table-cell">
+                        {editIndex === (currentPage - 1) * itemsPerPage + index ? (
+                          <input
+                            type="text"
+                            value={editStudentNumber}
+                            onChange={(e) => setEditStudentNumber(e.target.value)}
+                            className="w-full p-2 border rounded-lg"
+                          />
+                        ) : (
+                          idInfo.studentNumber
+                        )}
+                      </td>
+                      <td className="py-1 px-4 border table-cell">
+                        {editIndex === (currentPage - 1) * itemsPerPage + index ? (
+                          <input
+                            type="text"
+                            value={editMajor}
+                            onChange={(e) => setEditMajor(e.target.value)}
+                            className="w-full p-2 border rounded-lg"
+                          />
+                        ) : (
+                          idInfo.major
+                        )}
+                      </td>
+                      <td className="py-1 px-4 border">
+                        {editIndex === (currentPage - 1) * itemsPerPage + index ? (
+                          <>
+                            <button onClick={handleSave} className="text-green-500/80">
+                              <FontAwesomeIcon icon={faSave} />
+                            </button>
+                            <button onClick={() => setEditIndex(null)} className="text-red-500/80 ml-2">
+                              <FontAwesomeIcon icon={faCircleXmark} />
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button onClick={() => handleEdit((currentPage - 1) * itemsPerPage + index)} className="text-blue-500/80">
+                              <FontAwesomeIcon icon={faPencilAlt} />
+                            </button>
+                            <button onClick={() => handleDelete((currentPage - 1) * itemsPerPage + index)} className="text-red-500/80 ml-2">
+                              <FontAwesomeIcon icon={faTrash} />
+                            </button>
+                          </>
+                        )}
+                      </td>
                     </tr>
-                  </thead>
-                  <tbody>
-                    {currentItems.map((idInfo, index) => (
-                      <tr key={index} className="hover:bg-gray-100">
-                        <td className="py-2 px-4 border">
-                          {editIndex === index ? (
-                            <input
-                              type="text"
-                              value={editName}
-                              onChange={(e) => setEditName(e.target.value)}
-                              className="w-full p-2 border rounded-lg"
-                            />
-                          ) : (
-                            idInfo.name
-                          )}
-                        </td>
-                        <td className="py-2 px-4 border">
-                          {editIndex === index ? (
-                            <input
-                              type="text"
-                              value={editStudentNumber}
-                              onChange={(e) => setEditStudentNumber(e.target.value)}
-                              className="w-full p-2 border rounded-lg"
-                            />
-                          ) : (
-                            idInfo.studentNumber
-                          )}
-                        </td>
-                        <td className="py-2 px-4 border">
-                          {editIndex === index ? (
-                            <button onClick={handleSave} className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600">Save</button>
-                          ) : (
-                            <>
-                              <button onClick={() => handleEdit(index)} className="px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 mr-2">Edit</button>
-                              <button onClick={() => handleDelete(index)} className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600">Delete</button>
-                            </>
-                          )}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-  
-                {/* Pagination Controls */}
-                <div className="flex justify-between items-center mt-4">
-                  <button onClick={prevPage} disabled={currentPage === 1} className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 disabled:opacity-50">Previous</button>
-                  <span className="text-lg">Page {currentPage} of {totalPages}</span>
-                  <button onClick={nextPage} disabled={currentPage === totalPages} className="px-4 py-2 bg-gray-400 text-white rounded-lg hover:bg-gray-500 disabled:opacity-50">Next</button>
-                </div>
+                  ))}
+                </tbody>
+              </table>
+              <div className="flex justify-between mt-4">
+                <button onClick={prevPage} disabled={currentPage === 1} className="bg-gray-300 px-4 py-2 rounded disabled:opacity-50">
+                  Previous
+                </button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <button onClick={nextPage} disabled={currentPage === totalPages} className="bg-gray-300 px-4 py-2 rounded disabled:opacity-50">
+                  Next
+                </button>
               </div>
+            </div>            
             )}
-  
-            {/* Manually Input New ID */}
-            <div className="mt-6">
-              <h2 className="text-xl font-semibold text-gray-800 mb-3">Add New ID Information</h2>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="Name"
-                  className="flex-1 p-2 border rounded-lg"
-                />
-                <input
-                  type="text"
-                  value={newStudentNumber}
-                  onChange={(e) => setNewStudentNumber(e.target.value)}
-                  placeholder="Student Number"
-                  className="flex-1 p-2 border rounded-lg"
-                />
-                <button onClick={handleAdd} className="px-4 py-2 bg-[#4896ac] text-white rounded-lg hover:bg-[#326979] transition">Add</button>
-              </div>
-              {error && <p className="text-red-600 mt-2">{error}</p>}
-            </div>
           </div>
         </div>
-  
-        {/* Export Button */}
-        <div className="mt-4 text-center">
-          <button onClick={exportToCSV} className="px-4 py-2 bg-[#4896ac] text-white rounded-lg hover:bg-[#326979] transition">
-            Export to CSV
-          </button>
-        </div>
+
+        {isModalOpen && (
+          <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+            <div className="bg-white rounded-lg p-4 shadow-md">
+              <h2 className="text-xl font-semibold mb-2">Add New ID</h2>
+              <input
+                type="text"
+                value={newName}
+                onChange={(e) => setNewName(e.target.value)}
+                placeholder="Full Name"
+                className="p-2 border border-gray-300 rounded-lg mb-2 w-full"
+              />
+              <input
+                type="text"
+                value={newStudentNumber}
+                onChange={(e) => setNewStudentNumber(e.target.value)}
+                placeholder="Student Number"
+                className="p-2 border border-gray-300 rounded-lg mb-2 w-full"
+              />
+              <input
+                type="text"
+                value={newMajor}
+                onChange={(e) => setNewMajor(e.target.value)}
+                placeholder="Major/Program"
+                className="p-2 border border-gray-300 rounded-lg mb-4 w-full"
+              />
+              <div className="flex justify-end">
+                <button onClick={handleAdd} className="px-4 py-2 bg-[#4896ac] text-white rounded-lg hover:bg-[#326979]">
+                  Add ID
+                </button>
+                <button onClick={() => setIsModalOpen(false)} className="ml-2 px-4 py-2 bg-gray-300 rounded-lg">
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
-  );  
+  );
 };
 
 export default IDFetch;
