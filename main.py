@@ -13,13 +13,24 @@ pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tessera
 app = Flask(__name__)
 CORS(app)
 
+def preprocess_image(frame):
+    # Convert to grayscale
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    # Apply Gaussian blur to reduce noise
+    blurred = cv2.GaussianBlur(gray, (5, 5), 0)
+    # Apply thresholding to enhance text clarity
+    _, thresh = cv2.threshold(blurred, 150, 255, cv2.THRESH_BINARY)
+    return thresh
+
 def process_frame_for_text(frame):
-    return pytesseract.image_to_string(frame)
+    preprocessed_frame = preprocess_image(frame)
+    return pytesseract.image_to_string(preprocessed_frame)
 
 def extract_name_from_text(text):
-    combined_pattern = r"[A-Z][a-z]+ [A-Z][a-z]+\n\d+"
-    match = re.search(combined_pattern, text, re.MULTILINE)
-    return match.group(0) if match else "No match found"
+    # Updated pattern to match full names with varying lengths and a student number
+    combined_pattern = r"([A-Z][a-z]+(?:\s[A-Z][a-z]+)*)\s(\d+)"
+    match = re.search(combined_pattern, text)
+    return match.groups() if match else None
 
 @app.route('/capture', methods=['POST'])
 def capture():
@@ -35,9 +46,9 @@ def capture():
     extracted_text = process_frame_for_text(frame)
     id_info = extract_name_from_text(extracted_text)
 
-    if id_info != "No match found":
-        name, student_number = id_info.split('\n')
-        return jsonify({'name': name, 'studentNumber': student_number})
+    if id_info:
+        name, student_number = id_info
+        return jsonify({'name': name.strip(), 'studentNumber': student_number.strip()})
     else:
         return jsonify({'error': 'No match found'}), 200
 
