@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPencilAlt, faTrash, faSave, faCircleXmark} from '@fortawesome/free-solid-svg-icons';
+import { faPencilAlt, faTrash, faSave, faCircleXmark } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 
 interface IDInfo {
@@ -23,8 +23,9 @@ const IDFetch: React.FC = () => {
   const [newStudentNumber, setNewStudentNumber] = useState<string>('');
   const [newMajor, setNewMajor] = useState<string>('');
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const [searchTerm, setSearchTerm] = useState<string>(''); // State for search term
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isAutoCapture, setIsAutoCapture] = useState<boolean>(false); // New state for auto-capture toggle
   const itemsPerPage = 13;
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
@@ -47,6 +48,20 @@ const IDFetch: React.FC = () => {
     localStorage.setItem('idList', JSON.stringify(idList));
   }, [idList]);
 
+  useEffect(() => {
+    if (isAutoCapture) {
+      const intervalId = setInterval(() => {
+        captureFrame();
+      }, 1000); // Capture every 1 second
+
+      return () => clearInterval(intervalId); // Cleanup interval on component unmount or when stopped
+    }
+  }, [isAutoCapture]);
+
+  const toggleAutoCapture = () => {
+    setIsAutoCapture(prevState => !prevState); // Toggle the auto-capture status
+  };
+
   const captureFrame = async () => {
     if (canvasRef.current && videoRef.current) {
       const context = canvasRef.current.getContext('2d');
@@ -61,17 +76,20 @@ const IDFetch: React.FC = () => {
           } else {
             const newIDInfo = response.data;
   
-            // Check for duplicates before adding
-            const isDuplicate = idList.some(item => 
-              item.name === newIDInfo.name && 
-              item.studentNumber === newIDInfo.studentNumber &&
-              item.major === newIDInfo.major
+            // Get the current list from localStorage
+            const storedList = JSON.parse(localStorage.getItem('idList') || '[]');
+            
+            // Check for duplicates in the stored list
+            const isDuplicate = storedList.some((item: IDInfo) =>
+              item.studentNumber.trim() === newIDInfo.studentNumber.trim()
             );
   
             if (isDuplicate) {
               setError("This ID already exists in the list.");
             } else {
-              setIdList((prevList) => [...prevList, newIDInfo]);
+              const updatedList = [...storedList, newIDInfo];
+              setIdList(updatedList);
+              localStorage.setItem('idList', JSON.stringify(updatedList)); // Update localStorage immediately
               setError(null);
             }
           }
@@ -81,7 +99,7 @@ const IDFetch: React.FC = () => {
         }
       }
     }
-  };
+  };  
 
   const handleEdit = (index: number) => {
     setEditIndex(index);
@@ -110,16 +128,15 @@ const IDFetch: React.FC = () => {
 
   const handleAdd = () => {
     if (newName && newStudentNumber && newMajor) {
+      // Ensure the new student number is trimmed for consistency
       const isDuplicate = idList.some(item =>
-        item.name === newName &&
-        item.studentNumber === newStudentNumber &&
-        item.major === newMajor
+        item.studentNumber.trim() === newStudentNumber.trim()
       );
-
+  
       if (isDuplicate) {
         setError("This ID already exists in the list.");
       } else {
-        setIdList([...idList, { name: newName, studentNumber: newStudentNumber, major: newMajor }]);
+        setIdList([...idList, { name: newName, studentNumber: newStudentNumber.trim(), major: newMajor }]);
         setNewName('');
         setNewStudentNumber('');
         setNewMajor('');
@@ -129,7 +146,7 @@ const IDFetch: React.FC = () => {
     } else {
       setError("Please enter name, student number, and major.");
     }
-  };
+  };  
 
   // Filter logic for search
   const filteredItems = idList.filter(item => {
@@ -137,7 +154,7 @@ const IDFetch: React.FC = () => {
     const studentNumberMatch = item.studentNumber.toString().includes(searchTerm);
     const majorMatch = item.major ? item.major.toLowerCase().includes(searchTerm.toLowerCase()) : false; // Ensure item.major exists
     return nameMatch || studentNumberMatch || majorMatch;
-  });  
+  });
 
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
   const currentItems = filteredItems.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -182,9 +199,12 @@ const IDFetch: React.FC = () => {
             <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
             <div className="flex flex-col sm:flex-row justify-center mt-4">
               <button 
-                onClick={captureFrame} 
-                className="mb-2 sm:mb-0 sm:mr-4 px-4 py-2 bg-[#4896ac] text-white rounded-lg hover:bg-[#326979] transition">
-                Capture ID
+                onClick={toggleAutoCapture} 
+                className={`mb-2 sm:mb-0 sm:mr-4 px-4 py-2 rounded-lg text-white transition ${
+                  isAutoCapture ? 'bg-red-500 hover:bg-red-600' : 'bg-[#4896ac] hover:bg-[#326979]'
+                }`}
+              >
+                {isAutoCapture ? 'Stop Auto Capture' : 'Start Auto Capture'}
               </button>
               <button 
                 onClick={() => setIsModalOpen(true)} 
@@ -339,4 +359,4 @@ const IDFetch: React.FC = () => {
   );
 };
 
-export default IDFetch; 
+export default IDFetch;
