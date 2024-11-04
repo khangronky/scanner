@@ -43,7 +43,7 @@ def extract_name_from_text(text):
     Updated pattern matches full names with varying lengths and student numbers.
     """
     # Pattern to match full names (first and last) followed by a student number
-    combined_pattern = r"([A-Z][a-zA-Z]+(?:\s[A-Z][a-zA-Z]+)*)\s+(\d{6,})"
+    combined_pattern = r"([A-Z][a-zA-Z]+(?:\s[A-Z][a-zA-Z]+)*)\s+(\d{7})"  # Ensure ID is exactly 7 digits
     match = re.search(combined_pattern, text)
     return match.groups() if match else None
 
