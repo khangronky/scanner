@@ -79,14 +79,25 @@ const IDFetch: React.FC = () => {
             // Get the current list from localStorage
             const storedList = JSON.parse(localStorage.getItem('idList') || '[]');
             
-            // Check for duplicates in the stored list
-            const isDuplicate = storedList.some((item: IDInfo) =>
+            // Check if the ID exists in the stored list
+            const existingEntryIndex = storedList.findIndex((item: IDInfo) =>
               item.studentNumber.trim() === newIDInfo.studentNumber.trim()
             );
   
-            if (isDuplicate) {
-              setError("This ID already exists in the list.");
+            if (existingEntryIndex !== -1) {
+              // If the ID exists, check if the name is different
+              if (storedList[existingEntryIndex].name.trim().toLowerCase() !== newIDInfo.name.trim().toLowerCase()) {
+                // Update the name with the new correct name
+                storedList[existingEntryIndex].name = newIDInfo.name;
+                setIdList([...storedList]); // Update state with the modified list
+                localStorage.setItem('idList', JSON.stringify(storedList)); // Update localStorage
+                setError(null);
+              } else {
+                // If the ID and name match, no action needed
+                setError("This ID and name already exist in the list.");
+              }
             } else {
+              // If the ID does not exist, add the new entry
               const updatedList = [...storedList, newIDInfo];
               setIdList(updatedList);
               localStorage.setItem('idList', JSON.stringify(updatedList)); // Update localStorage immediately
@@ -99,7 +110,7 @@ const IDFetch: React.FC = () => {
         }
       }
     }
-  };  
+  };   
 
   const handleEdit = (index: number) => {
     setEditIndex(index);
@@ -205,8 +216,8 @@ const IDFetch: React.FC = () => {
                   top: '50%', // Adjust to position vertically
                   left: '50%', // Adjust to position horizontally
                   transform: 'translate(-50%, -50%)',
-                  width: '90%', // Adjust width as needed
-                  height: '80%', // Adjust height as needed
+                  width: '75%', // Adjust width as needed
+                  height: '65%', // Adjust height as needed
                   pointerEvents: 'none',
                 }}
               ></div>
@@ -225,7 +236,7 @@ const IDFetch: React.FC = () => {
                 </div>
               )}
             </div>
-            <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
+            <canvas ref={canvasRef} width="1280" height="720" className="hidden"></canvas>
             <div className="flex flex-col sm:flex-row justify-center mt-4">
               <button 
                 onClick={toggleAutoCapture} 

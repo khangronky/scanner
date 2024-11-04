@@ -40,12 +40,33 @@ def process_frame_for_text(frame):
 def extract_name_from_text(text):
     """
     Extracts name and student number from the extracted text.
-    Updated pattern matches full names with varying lengths and student numbers.
+    Updated to remove specified keywords and months before processing.
+    Handles names split across lines and formats uppercase names correctly.
     """
-    # Pattern to match full names (first and last) followed by a student number
-    combined_pattern = r"([A-Z][a-zA-Z]+(?:\s[A-Z][a-zA-Z]+)*)\s+(\d{7})"  # Ensure ID is exactly 7 digits
-    match = re.search(combined_pattern, text)
-    return match.groups() if match else None
+    # Define the excluded keywords, including months of the year
+    excluded_keywords = r"(RMIT|Student|STUDENT|UNIVERSITY|SINH\sVIEN|January|February|March|April|May|June|July|August|September|October|November|December)"
+
+    # Remove excluded keywords from the text
+    cleaned_text = re.sub(excluded_keywords, '', text, flags=re.IGNORECASE)
+
+    # Pattern to match full names (first and last) followed by a student number,
+    # allowing for newlines between the name parts.
+    combined_pattern = r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+|\n[A-Z][a-zA-Z]+)*)\s*[\n\s]+(\d{7})"  # Ensure ID is exactly 7 digits
+    match = re.search(combined_pattern, cleaned_text)
+
+    if match:
+        name, student_number = match.groups()
+        
+        # Split the name into parts and format
+        name_parts = name.split()
+        formatted_name_parts = [
+            part.capitalize() if part.isupper() else part for part in name_parts
+        ]
+        formatted_name = ' '.join(formatted_name_parts)
+        
+        return formatted_name.strip(), student_number.strip()
+    
+    return None
 
 @app.route('/capture', methods=['POST'])
 def capture():
@@ -61,6 +82,9 @@ def capture():
     nparr = np.frombuffer(base64.b64decode(image_data), np.uint8)
     frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
+    if frame is None:
+        return jsonify({'error': 'Image could not be decoded'}), 400
+
     # Process the frame and extract text
     extracted_text = process_frame_for_text(frame)
     id_info = extract_name_from_text(extracted_text)
@@ -69,7 +93,7 @@ def capture():
         name, student_number = id_info
         return jsonify({'name': name.strip(), 'studentNumber': student_number.strip()})
     else:
-        return jsonify({'error': 'No match found'}), 200
+        return jsonify({'error': 'No match found in the provided ID data'}), 200
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5000)
