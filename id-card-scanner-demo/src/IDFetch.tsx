@@ -195,7 +195,36 @@ const IDFetch: React.FC = () => {
         <div className="flex flex-col md:flex-row">
           <div className="flex-1 md:w-1/2 p-2">
             <h2 className="text-xl font-semibold text-gray-800 mb-2">Student ID Here</h2>
-            <video ref={videoRef} autoPlay className="w-full h-auto rounded-lg shadow-md border border-gray-300"></video>
+            <div className="relative">
+              <video ref={videoRef} autoPlay className="w-full h-auto rounded-lg shadow-md border border-gray-300"></video>
+              
+              {/* Overlay rectangle for aligning the ID card */}
+              <div
+                className="absolute border-4 border-red-500"
+                style={{
+                  top: '50%', // Adjust to position vertically
+                  left: '50%', // Adjust to position horizontally
+                  transform: 'translate(-50%, -50%)',
+                  width: '90%', // Adjust width as needed
+                  height: '80%', // Adjust height as needed
+                  pointerEvents: 'none',
+                }}
+              ></div>
+
+              {/* Overlay text for error messages */}
+              {error && (
+                <div
+                  className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-40"
+                  style={{
+                    color: 'white',
+                    fontSize: '1.5rem',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {error}
+                </div>
+              )}
+            </div>
             <canvas ref={canvasRef} width="640" height="480" className="hidden"></canvas>
             <div className="flex flex-col sm:flex-row justify-center mt-4">
               <button 
@@ -217,7 +246,6 @@ const IDFetch: React.FC = () => {
                 Export to CSV
               </button>
             </div>
-            {error && <p className="text-red-600 mt-2">{error}</p>}
           </div>
 
           <div className="flex-1 md:w-1/2 p-2">
@@ -351,6 +379,7 @@ const IDFetch: React.FC = () => {
                   Cancel
                 </button>
               </div>
+              {error && <p className="text-red-600 mt-2">{error}</p>}
             </div>
           </div>
         )}
