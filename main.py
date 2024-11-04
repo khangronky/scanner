@@ -49,9 +49,9 @@ def extract_name_from_text(text):
     # Remove excluded keywords from the text
     cleaned_text = re.sub(excluded_keywords, '', text, flags=re.IGNORECASE)
 
-    # Pattern to match full names (first and last) followed by a student number,
-    # allowing for newlines between the name parts.
-    combined_pattern = r"([A-Z][a-zA-Z]+(?:\s+[A-Z][a-zA-Z]+|\n[A-Z][a-zA-Z]+)*)\s*[\n\s]+(\d{7})"  # Ensure ID is exactly 7 digits
+    # Pattern to match full names (first and last) allowing for newlines or spaces between parts,
+    # followed by a student number.
+    combined_pattern = r"([A-Z][a-zA-Z]+(?:[\s\n]+[A-Z][a-zA-Z]+)*)\s*\n*\s*(\d{7})"
     match = re.search(combined_pattern, cleaned_text)
 
     if match:
