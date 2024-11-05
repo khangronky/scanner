@@ -3,7 +3,7 @@
 This project is a web application for capturing ID information using a webcam.
 
 ## Installation
-
+ 
 1. **Clone the repository**:
    ```bash
    git clone https://github.com/Railroad-Wrecker/NCT-ID-Scanner.git
