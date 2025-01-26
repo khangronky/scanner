@@ -3,36 +3,49 @@
 This project is a web application for capturing ID information using a webcam.
 
 ## Installation
- 
+
 1. **Clone the repository**:
+
    ```bash
    git clone https://github.com/Railroad-Wrecker/NCT-ID-Scanner.git
-   cd your-repo-name
+   cd NCT-ID-Scanner
    ```
 
 2. **Install the required Python packages**:
-   Make sure you have Python and pip installed, then run:
+   Make sure you have Python and pip installed.
+   Navigate to the backend directory and run:
+
    ```bash
-   pip install opencv-python pytesseract pandas Flask Flask-Cors
+   cd server
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
    ```
 
 3. **Install Node.js packages** (for the frontend):
-   Navigate to the frontend directory (if applicable) and run:
+   Make sure you have Node.js and npm installed.
+   Navigate to the frontend directory and run:
+
    ```bash
+   cd client
    npm install
    ```
 
 ## Running the Project
 
 1. **Start the Backend Server**:
-   Run the following command in the backend directory:
+   Navigate to the backend directory and run:
+
    ```bash
+   cd server
    python main.py
    ```
 
 2. **Start the Frontend Application**:
-   In the frontend directory, run:
+   Navigate to the frontend directory and run:
+
    ```bash
+   cd client
    npm start
    ```
 
