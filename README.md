@@ -18,7 +18,7 @@ This project is a web application for capturing ID information using a webcam.
    ```bash
    cd server
    python -m venv venv
-   source venv/bin/activate
+   source venv/Scripts/activate
    pip install -r requirements.txt
    ```
 
