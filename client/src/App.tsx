@@ -1,7 +1,5 @@
-import React from 'react';
-import './App.css';
-import IDFetch from './IDFetch';
-import './index.css'; // Adjust the path if necessary
+import "./styles/App.css";
+import IDFetch from "./components/IDFetch";
 
 function App() {
   return (
