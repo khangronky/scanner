@@ -13,6 +13,7 @@ This project is a web application for capturing ID information using a webcam.
 
 2. **Install Node.js packages** (for the frontend):
    Make sure you have Node.js and npm installed.
+
    Navigate to the frontend directory and run:
 
    ```bash
@@ -22,6 +23,7 @@ This project is a web application for capturing ID information using a webcam.
 
 3. **Install Node.js packages** (for the backend):
    Make sure you have Node.js and npm installed.
+
    Navigate to the backend directory and run:
 
    ```bash
@@ -31,6 +33,11 @@ This project is a web application for capturing ID information using a webcam.
 
 4. **Install the required Python packages**:
    Make sure you have Python and pip installed.
+
+   Make sure you have the Tesseract OCR installed. This can be found [here](https://github.com/UB-Mannheim/tesseract/wiki)
+
+   After installing Tesseract OCR, ensure that its executable is in: `C:\Program Files\Tesseract-OCR\tesseract.exe`
+
    Navigate to the OCR directory and run:
 
    ```bash
