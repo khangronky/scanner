@@ -31,7 +31,7 @@ This project is a web application for capturing ID information using a webcam.
 
 4. **Install the required Python packages**:
    Make sure you have Python and pip installed.
-   Navigate to the backend directory and run:
+   Navigate to the OCR directory and run:
 
    ```bash
    cd ocr
