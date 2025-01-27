@@ -40,9 +40,12 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         const imageData = canvasRef.current.toDataURL("image/png");
 
         try {
-          const response = await axios.post("http://localhost:5000/capture", {
-            imageData,
-          });
+          const response = await axios.post(
+            "http://localhost:5000/api/v1/capture",
+            {
+              imageData,
+            }
+          );
           if (response.data.error) {
             setError(response.data.error);
           } else {
