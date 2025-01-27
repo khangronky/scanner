@@ -20,7 +20,6 @@ const IDFetch: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
-  const [isAutoCapture, setIsAutoCapture] = useState<boolean>(false);
 
   useEffect(() => {
     localStorage.setItem("idList", JSON.stringify(idList));
@@ -143,8 +142,6 @@ const IDFetch: React.FC = () => {
             <VideoCapture
               error={error}
               setError={setError}
-              isAutoCapture={isAutoCapture}
-              setIsAutoCapture={setIsAutoCapture}
               handleNewID={handleNewID}
             />
             <div className="flex justify-center mt-4">

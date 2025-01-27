@@ -1,28 +1,20 @@
-import React, {
-  useEffect,
-  useRef,
-  Dispatch,
-  SetStateAction,
-  useCallback,
-} from "react";
+import React, { useEffect, useRef, useCallback, useState } from "react";
 import axios from "axios";
 import { IDInfo } from "../types/interfaces";
 
 interface VideoCaptureProps {
   error: string | null;
   setError: (error: string | null) => void;
-  isAutoCapture: boolean;
-  setIsAutoCapture: Dispatch<SetStateAction<boolean>>;
   handleNewID: (newIDInfo: IDInfo) => void;
 }
 
 const VideoCapture: React.FC<VideoCaptureProps> = ({
   error,
   setError,
-  isAutoCapture,
-  setIsAutoCapture,
   handleNewID,
 }) => {
+  const [isAutoCapture, setIsAutoCapture] = useState<boolean>(false);
+
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
