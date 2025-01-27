@@ -14,9 +14,11 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   handleNewID,
 }) => {
   const [isAutoCapture, setIsAutoCapture] = useState<boolean>(false);
+  const [isCameraOn, setIsCameraOn] = useState<boolean>(true);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const captureFrame = useCallback(async () => {
     if (canvasRef.current && videoRef.current) {
@@ -52,18 +54,28 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   }, [handleNewID, setError]);
 
   useEffect(() => {
-    navigator.mediaDevices
-      .getUserMedia({ video: true })
-      .then((stream) => {
+    if (isCameraOn) {
+      navigator.mediaDevices
+        .getUserMedia({ video: true })
+        .then((stream) => {
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            streamRef.current = stream;
+          }
+        })
+        .catch((err) => {
+          console.error("Error accessing webcam: ", err);
+          setError("Could not access the webcam.");
+        });
+    } else {
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
         if (videoRef.current) {
-          videoRef.current.srcObject = stream;
+          videoRef.current.srcObject = null;
         }
-      })
-      .catch((err) => {
-        console.error("Error accessing webcam: ", err);
-        setError("Could not access the webcam.");
-      });
-  }, [setError]);
+      }
+    }
+  }, [setError, isCameraOn]);
 
   useEffect(() => {
     if (isAutoCapture) {
@@ -74,6 +86,13 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
       return () => clearInterval(intervalId);
     }
   }, [isAutoCapture, captureFrame]);
+
+  const toggleCamera = () => {
+    setIsCameraOn((prev) => !prev);
+    if (isAutoCapture) {
+      setIsAutoCapture(false);
+    }
+  };
 
   const toggleAutoCapture = () => {
     setIsAutoCapture((prevState) => !prevState);
@@ -122,14 +141,26 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         height="720"
         className="hidden"
       ></canvas>
-      <div className="flex justify-center mt-4">
+
+      <div className="flex justify-center gap-2 mt-4">
+        <button
+          onClick={toggleCamera}
+          className={`px-4 py-2 rounded-lg font-medium ${
+            isCameraOn
+              ? "bg-red-500 hover:bg-red-600 text-white"
+              : "bg-green-500 hover:bg-green-600 text-white"
+          }`}
+        >
+          {isCameraOn ? "Turn Off Camera" : "Turn On Camera"}
+        </button>
         <button
           onClick={toggleAutoCapture}
-          className={`px-4 py-2 rounded-lg text-white transition ${
+          className={`px-4 py-2 rounded-lg font-medium ${
             isAutoCapture
-              ? "bg-red-500 hover:bg-red-600"
-              : "bg-[#4896ac] hover:bg-[#326979]"
+              ? "bg-red-500 hover:bg-red-600 text-white"
+              : "bg-blue-500 hover:bg-blue-600 text-white"
           }`}
+          disabled={!isCameraOn}
         >
           {isAutoCapture ? "Stop Auto Capture" : "Start Auto Capture"}
         </button>
