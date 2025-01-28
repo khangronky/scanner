@@ -1,4 +1,4 @@
-import "./styles/App.css";
+import "./App.css";
 import IDFetch from "./pages/IDFetch";
 import { BrowserRouter, Routes, Route } from "react-router";
 import IDList from "./pages/IDList";
