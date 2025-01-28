@@ -119,8 +119,8 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
               transform: "translate(-50%, -50%)",
               width: "75%",
               height: "65%",
-                pointerEvents: "none",
-              }}
+              pointerEvents: "none",
+            }}
           ></div>
         )}
       </div>
@@ -162,4 +162,4 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   );
 };
 
-export default VideoCapture;
+export default VideoCapture; 
