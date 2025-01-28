@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { IDInfo } from "../types/interfaces";
-import VideoCapture from "./VideoCapture";
-import StudentList from "./StudentList";
-import AddStudentModal from "./AddStudentModal";
+import VideoCapture from "../components/VideoCapture";
+import StudentList from "../components/StudentList";
+import AddStudentModal from "../components/AddStudentModal";
 
 const IDFetch: React.FC = () => {
   const [idList, setIdList] = useState<IDInfo[]>(() => {
@@ -132,12 +132,12 @@ const IDFetch: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-[#f2fafc]">
-      <div className="container mx-auto p-6 bg-[#e8f5fc] bg-opacity-80 rounded-lg shadow-md">
+    <div className="flex justify-center min-h-screen bg-[#f2fafc]">
+      <div className="w-full md:w-4/5 p-4 bg-[#e8f5fc]/80 rounded-lg shadow-md">
         <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">
           NEO Culture Technology ID Scanner
         </h1>
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col md:flex-row gap-2">
           <div className="flex-1 md:w-1/2 p-2">
             <VideoCapture
               error={error}

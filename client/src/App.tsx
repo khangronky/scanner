@@ -1,11 +1,16 @@
 import "./styles/App.css";
-import IDFetch from "./components/IDFetch";
+import IDFetch from "./pages/IDFetch";
+import { BrowserRouter, Routes, Route } from "react-router";
+import IDList from "./pages/IDList";
 
 function App() {
   return (
-    <div className="App">
-      <IDFetch />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<IDFetch />} />
+        <Route path="/idlist" element={<IDList />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
 

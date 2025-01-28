@@ -14,7 +14,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   handleNewID,
 }) => {
   const [isAutoCapture, setIsAutoCapture] = useState<boolean>(false);
-  const [isCameraOn, setIsCameraOn] = useState<boolean>(true);
+  const [isCameraOn, setIsCameraOn] = useState<boolean>(false);
 
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -65,7 +65,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         })
         .catch((err) => {
           console.error("Error accessing webcam: ", err);
-          setError("Could not access the webcam.");
+          setError("Can not access the webcam.");
         });
     } else {
       if (streamRef.current) {
@@ -100,39 +100,28 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
 
   return (
     <>
-      <h2 className="text-xl font-semibold text-gray-800 mb-2">
+      <h2 className="text-xl text-center font-semibold text-gray-800 mb-2">
         Student ID Here
       </h2>
       <div className="relative">
         <video
           ref={videoRef}
           autoPlay
-          className="w-full h-auto rounded-lg shadow-md border border-gray-300"
+          className="w-full rounded-lg shadow-md border border-gray-300"
         ></video>
 
-        <div
-          className="absolute border-4 border-red-500"
-          style={{
-            top: "50%",
-            left: "50%",
-            transform: "translate(-50%, -50%)",
-            width: "75%",
-            height: "65%",
-            pointerEvents: "none",
-          }}
-        ></div>
-
-        {error && (
+        {isCameraOn && (
           <div
-            className="absolute top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-40"
+            className="absolute border-4 border-red-500"
             style={{
-              color: "white",
-              fontSize: "1.5rem",
-              fontWeight: "bold",
-            }}
-          >
-            {error}
-          </div>
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+              width: "75%",
+              height: "65%",
+                pointerEvents: "none",
+              }}
+          ></div>
         )}
       </div>
       <canvas
@@ -142,7 +131,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         className="hidden"
       ></canvas>
 
-      <div className="flex justify-center gap-2 mt-4">
+      <div className="flex justify-center gap-2 my-4">
         <button
           onClick={toggleCamera}
           className={`px-4 py-2 rounded-lg font-medium ${
@@ -165,6 +154,10 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
           {isAutoCapture ? "Stop Auto Capture" : "Start Auto Capture"}
         </button>
       </div>
+
+      {error && (
+        <div className="text-center text-red-500 font-medium">{error}</div>
+      )}
     </>
   );
 };

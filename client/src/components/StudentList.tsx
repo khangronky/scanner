@@ -6,6 +6,7 @@ import {
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import { IDInfo } from "../types/interfaces";
+import { NavLink } from "react-router";
 
 interface StudentListProps {
   idList: IDInfo[];
@@ -78,7 +79,7 @@ const StudentList: React.FC<StudentListProps> = ({
   };
 
   return (
-    <div>
+    <>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Student List</h2>
         <button
@@ -212,7 +213,14 @@ const StudentList: React.FC<StudentListProps> = ({
           </button>
         </div>
       )}
-    </div>
+      <div className="flex justify-center mt-4">
+        <NavLink to="/idlist">
+          <button className="bg-[#4896ac] hover:bg-[#326979] text-white px-4 py-2 rounded-lg">
+            View all students
+          </button>
+        </NavLink>
+      </div>
+    </>
   );
 };
 
