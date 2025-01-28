@@ -1,10 +1,23 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import App from "./App";
 import "./index.css";
+import { createBrowserRouter, RouterProvider } from "react-router";
+import IDFetch from "./pages/IDFetch";
+import IDList from "./pages/IDList";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <IDFetch />,
+  },
+  {
+    path: "/idlist",
+    element: <IDList />,
+  },
+]);
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <App />
+    <RouterProvider router={router} />
   </React.StrictMode>
 );

@@ -46,7 +46,7 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setNewName(e.target.value)
           }
-          className="w-full p-2 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4896ac]"
+          className="w-full p-2 mb-4 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4896ac]"
         />
         <input
           type="text"
@@ -55,7 +55,7 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setNewStudentNumber(e.target.value)
           }
-          className="w-full p-2 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4896ac]"
+          className="w-full p-2 mb-4 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4896ac]"
         />
         <input
           type="text"
@@ -64,7 +64,7 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
             setNewMajor(e.target.value)
           }
-          className="w-full p-2 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4896ac]"
+          className="w-full p-2 mb-4 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4896ac]"
         />
         <button
           onClick={handleAdd}

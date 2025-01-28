@@ -97,7 +97,7 @@ const StudentList: React.FC<StudentListProps> = ({
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setSearchTerm(e.target.value)
         }
-        className="w-full p-2 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#4896ac]"
+        className="w-full p-2 mb-4 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4896ac]"
       />
 
       <div className="overflow-x-auto">
@@ -121,7 +121,7 @@ const StudentList: React.FC<StudentListProps> = ({
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setEditName(e.target.value)
                       }
-                      className="w-full p-1 border rounded"
+                      className="w-full p-1 border rounded-sm"
                     />
                   ) : (
                     item.name
@@ -135,7 +135,7 @@ const StudentList: React.FC<StudentListProps> = ({
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setEditStudentNumber(e.target.value)
                       }
-                      className="w-full p-1 border rounded"
+                      className="w-full p-1 border rounded-sm"
                     />
                   ) : (
                     item.studentNumber
@@ -149,7 +149,7 @@ const StudentList: React.FC<StudentListProps> = ({
                       onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
                         setEditMajor(e.target.value)
                       }
-                      className="w-full p-1 border rounded"
+                      className="w-full p-1 border rounded-sm"
                     />
                   ) : (
                     item.major
