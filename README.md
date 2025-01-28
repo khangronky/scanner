@@ -78,7 +78,7 @@ This project is a web application for capturing ID information using a webcam.
    After starting the application, open your web browser and navigate to:
 
    ```bash
-   http://localhost:3000
+   http://localhost:5173
    ```
 
 ## Usage
