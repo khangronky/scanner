@@ -9,8 +9,8 @@ interface AddStudentModalProps {
   setNewName: (name: string) => void;
   newStudentNumber: string;
   setNewStudentNumber: (number: string) => void;
-  newMajor: string;
-  setNewMajor: (major: string) => void;
+  newProgram: string;
+  setNewProgram: (program: string) => void;
   handleAdd: () => void;
 }
 
@@ -21,14 +21,14 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
   setNewName,
   newStudentNumber,
   setNewStudentNumber,
-  newMajor,
-  setNewMajor,
+  newProgram,
+  setNewProgram,
   handleAdd,
 }) => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg w-96">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Add New Student</h2>
@@ -59,10 +59,10 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
         />
         <input
           type="text"
-          placeholder="Major/Program"
-          value={newMajor}
+          placeholder="Program"
+          value={newProgram}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setNewMajor(e.target.value)
+            setNewProgram(e.target.value)
           }
           className="w-full p-2 mb-4 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4896ac]"
         />

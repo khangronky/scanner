@@ -6,17 +6,18 @@ import AddStudentModal from "../components/AddStudentModal";
 
 const IDFetch: React.FC = () => {
   const [idList, setIdList] = useState<IDInfo[]>(() => {
-    const storedList = localStorage.getItem("idList");
-    return storedList ? JSON.parse(storedList) : [];
+    const storedList = JSON.parse(localStorage.getItem("idList") || "[]");
+    return storedList;
   });
+
   const [error, setError] = useState<string | null>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editName, setEditName] = useState<string>("");
   const [editStudentNumber, setEditStudentNumber] = useState<string>("");
-  const [editMajor, setEditMajor] = useState<string>("");
+  const [editProgram, setEditProgram] = useState<string>("");
   const [newName, setNewName] = useState<string>("");
   const [newStudentNumber, setNewStudentNumber] = useState<string>("");
-  const [newMajor, setNewMajor] = useState<string>("");
+  const [newProgram, setNewProgram] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -25,58 +26,99 @@ const IDFetch: React.FC = () => {
     localStorage.setItem("idList", JSON.stringify(idList));
   }, [idList]);
 
-  const handleNewID = (newIDInfo: IDInfo) => {
-    const storedList = JSON.parse(localStorage.getItem("idList") || "[]");
+  const createStudentRecord = (studentData: {
+    name: string;
+    studentNumber: string;
+    program: string;
+  }) => {
+    return {
+      name: studentData.name.trim(),
+      studentNumber: studentData.studentNumber.trim(),
+      program: studentData.program || "",
+      timestamp: new Date().toLocaleString(),
+    };
+  };
 
-    const existingEntryIndex = storedList.findIndex(
-      (item: IDInfo) =>
-        item.studentNumber.trim() === newIDInfo.studentNumber.trim()
+  const handleNewID = (newIDInfo: IDInfo) => {
+    const existingEntryIndex = idList.findIndex(
+      (item) => item.studentNumber.trim() === newIDInfo.studentNumber.trim()
     );
 
     if (existingEntryIndex !== -1) {
       if (
-        storedList[existingEntryIndex].name.trim().toLowerCase() !==
+        idList[existingEntryIndex].name.trim().toLowerCase() !==
         newIDInfo.name.trim().toLowerCase()
       ) {
-        storedList[existingEntryIndex].name = newIDInfo.name;
-        setIdList([...storedList]);
-        localStorage.setItem("idList", JSON.stringify(storedList));
+        const updatedList = [...idList];
+        updatedList[existingEntryIndex] = createStudentRecord({
+          name: newIDInfo.name.trim(),
+          studentNumber: newIDInfo.studentNumber.trim(),
+          program: newIDInfo.program.trim(),
+        });
+        setIdList(updatedList);
         setError(null);
       } else {
-        setError("This ID and name already exist in the list.");
+        setError("This record already exists in the list.");
       }
     } else {
-      const updatedList = [...storedList, newIDInfo];
-      setIdList(updatedList);
-      localStorage.setItem("idList", JSON.stringify(updatedList));
+      setIdList([...idList, createStudentRecord(newIDInfo)]);
       setError(null);
     }
+  };
+
+  const handleAdd = () => {
+    if (!newName || !newStudentNumber) {
+      setError("Please enter name and student number");
+      return;
+    }
+
+    const existingEntry = idList.find(
+      (item) => item.studentNumber.trim() === newStudentNumber.trim()
+    );
+
+    if (existingEntry) {
+      setError("This record already exists in the list.");
+      return;
+    }
+
+    setIdList([
+      ...idList,
+      createStudentRecord({
+        name: newName,
+        studentNumber: newStudentNumber,
+        program: newProgram,
+      }),
+    ]);
+    
+    setNewName("");
+    setNewStudentNumber("");
+    setNewProgram("");
+    setIsModalOpen(false);
+    setError(null);
   };
 
   const handleEdit = (index: number) => {
     setEditIndex(index);
     setEditName(idList[index].name);
     setEditStudentNumber(idList[index].studentNumber);
-    setEditMajor(idList[index].major);
+    setEditProgram(idList[index].program);
   };
 
   const handleSave = () => {
-    if (editIndex !== null) {
-      const updatedList = idList.map((item, index) =>
-        index === editIndex
-          ? {
-              name: editName,
-              studentNumber: editStudentNumber,
-              major: editMajor,
-            }
-          : item
-      );
-      setIdList(updatedList);
-      setEditIndex(null);
-      setEditName("");
-      setEditStudentNumber("");
-      setEditMajor("");
-    }
+    if (editIndex === null) return;
+
+    const updatedList = [...idList];
+    updatedList[editIndex] = createStudentRecord({
+      name: editName,
+      studentNumber: editStudentNumber,
+      program: editProgram,
+    });
+    
+    setIdList(updatedList);
+    setEditIndex(null);
+    setEditName("");
+    setEditStudentNumber("");
+    setEditProgram("");
   };
 
   const handleDelete = (index: number) => {
@@ -84,40 +126,12 @@ const IDFetch: React.FC = () => {
     setIdList(updatedList);
   };
 
-  const handleAdd = () => {
-    if (newName && newStudentNumber && newMajor) {
-      const isDuplicate = idList.some(
-        (item) => item.studentNumber.trim() === newStudentNumber.trim()
-      );
-
-      if (isDuplicate) {
-        setError("This ID already exists in the list.");
-      } else {
-        setIdList([
-          ...idList,
-          {
-            name: newName,
-            studentNumber: newStudentNumber.trim(),
-            major: newMajor,
-          },
-        ]);
-        setNewName("");
-        setNewStudentNumber("");
-        setNewMajor("");
-        setIsModalOpen(false);
-        setError(null);
-      }
-    } else {
-      setError("Please enter name, student number, and major.");
-    }
-  };
-
   const exportToCSV = () => {
-    const headers = ["Name", "Student Number", "Major/Program"];
+    const headers = ["Name", "Student Number", "Program", "Timestamp"];
     const csvRows = [
       headers.join(","),
       ...idList.map(
-        (item) => `${item.name},${item.studentNumber},${item.major}`
+        (item) => `${item.name},${item.studentNumber},${item.program},${item.timestamp}`
       ),
     ];
 
@@ -160,10 +174,10 @@ const IDFetch: React.FC = () => {
               editIndex={editIndex}
               editName={editName}
               editStudentNumber={editStudentNumber}
-              editMajor={editMajor}
+              editProgram={editProgram}
               setEditName={setEditName}
               setEditStudentNumber={setEditStudentNumber}
-              setEditMajor={setEditMajor}
+              setEditProgram={setEditProgram}
               handleEdit={handleEdit}
               handleSave={handleSave}
               handleDelete={handleDelete}
@@ -183,8 +197,8 @@ const IDFetch: React.FC = () => {
           setNewName={setNewName}
           newStudentNumber={newStudentNumber}
           setNewStudentNumber={setNewStudentNumber}
-          newMajor={newMajor}
-          setNewMajor={setNewMajor}
+          newProgram={newProgram}
+          setNewProgram={setNewProgram}
           handleAdd={handleAdd}
         />
       </div>

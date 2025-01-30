@@ -13,10 +13,10 @@ interface StudentListProps {
   editIndex: number | null;
   editName: string;
   editStudentNumber: string;
-  editMajor: string;
+  editProgram: string;
   setEditName: (name: string) => void;
   setEditStudentNumber: (number: string) => void;
-  setEditMajor: (major: string) => void;
+  setEditProgram: (program: string) => void;
   handleEdit: (index: number) => void;
   handleSave: () => void;
   handleDelete: (index: number) => void;
@@ -32,10 +32,10 @@ const StudentList: React.FC<StudentListProps> = ({
   editIndex,
   editName,
   editStudentNumber,
-  editMajor,
+  editProgram,
   setEditName,
   setEditStudentNumber,
-  setEditMajor,
+  setEditProgram,
   handleEdit,
   handleSave,
   handleDelete,
@@ -54,10 +54,10 @@ const StudentList: React.FC<StudentListProps> = ({
     const studentNumberMatch = item.studentNumber
       .toString()
       .includes(searchTerm);
-    const majorMatch = item.major
-      ? item.major.toLowerCase().includes(searchTerm.toLowerCase())
+    const programMatch = item.program
+      ? item.program.toLowerCase().includes(searchTerm.toLowerCase())
       : false;
-    return nameMatch || studentNumberMatch || majorMatch;
+    return nameMatch || studentNumberMatch || programMatch;
   });
 
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
@@ -92,7 +92,7 @@ const StudentList: React.FC<StudentListProps> = ({
 
       <input
         type="text"
-        placeholder="Search by name, ID, or major..."
+        placeholder="Search by name, ID, or program..."
         value={searchTerm}
         onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
           setSearchTerm(e.target.value)
@@ -104,82 +104,94 @@ const StudentList: React.FC<StudentListProps> = ({
         <table className="min-w-full bg-white rounded-lg overflow-hidden">
           <thead className="bg-[#4896ac] text-white">
             <tr>
-              <th className="py-2 px-4 text-left">Name</th>
-              <th className="py-2 px-4 text-left">Student Number</th>
-              <th className="py-2 px-4 text-left">Major/Program</th>
+              <th className="py-2 px-4 text-center">Name</th>
+              <th className="py-2 px-4 text-center">Student Number</th>
+              <th className="py-2 px-4 text-center">Program</th>
+              <th className="py-2 px-4 text-center">Timestamp</th>
               <th className="py-2 px-4 text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            {currentItems.map((item, index) => (
-              <tr key={index} className="border-b hover:bg-gray-50 transition">
-                <td className="py-2 px-4">
-                  {editIndex === index ? (
-                    <input
-                      type="text"
-                      value={editName}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEditName(e.target.value)
-                      }
-                      className="w-full p-1 border rounded-sm"
-                    />
-                  ) : (
-                    item.name
-                  )}
-                </td>
-                <td className="py-2 px-4">
-                  {editIndex === index ? (
-                    <input
-                      type="text"
-                      value={editStudentNumber}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEditStudentNumber(e.target.value)
-                      }
-                      className="w-full p-1 border rounded-sm"
-                    />
-                  ) : (
-                    item.studentNumber
-                  )}
-                </td>
-                <td className="py-2 px-4">
-                  {editIndex === index ? (
-                    <input
-                      type="text"
-                      value={editMajor}
-                      onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                        setEditMajor(e.target.value)
-                      }
-                      className="w-full p-1 border rounded-sm"
-                    />
-                  ) : (
-                    item.major
-                  )}
-                </td>
-                <td className="py-2 px-4 text-center">
-                  {editIndex === index ? (
-                    <button
-                      onClick={handleSave}
-                      className="text-green-600 hover:text-green-800 mx-1"
-                    >
-                      <FontAwesomeIcon icon={faSave} />
-                    </button>
-                  ) : (
-                    <button
-                      onClick={() => handleEdit(index)}
-                      className="text-blue-600 hover:text-blue-800 mx-1"
-                    >
-                      <FontAwesomeIcon icon={faPencilAlt} />
-                    </button>
-                  )}
-                  <button
-                    onClick={() => handleDelete(index)}
-                    className="text-red-600 hover:text-red-800 mx-1"
-                  >
-                    <FontAwesomeIcon icon={faTrash} />
-                  </button>
+            {currentItems.length === 0 ? (
+              <tr>
+                <td colSpan={5} className="py-4 text-center text-gray-500">
+                  No records found
                 </td>
               </tr>
-            ))}
+            ) : (
+              currentItems.map((item, index) => (
+                <tr key={index} className="border-b hover:bg-gray-50 transition">
+                  <td className="py-2 px-4">
+                    {editIndex === index ? (
+                      <input
+                        type="text"
+                        value={editName}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setEditName(e.target.value)
+                        }
+                        className="w-full p-1 border rounded-sm"
+                      />
+                    ) : (
+                      item.name
+                    )}
+                  </td>
+                  <td className="py-2 px-4">
+                    {editIndex === index ? (
+                      <input
+                        type="text"
+                        value={editStudentNumber}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setEditStudentNumber(e.target.value)
+                        }
+                        className="w-full p-1 border rounded-sm"
+                      />
+                    ) : (
+                      item.studentNumber
+                    )}
+                  </td>
+                  <td className="py-2 px-4">
+                    {editIndex === index ? (
+                      <input
+                        type="text"
+                        value={editProgram}
+                        onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                          setEditProgram(e.target.value)
+                        }
+                        className="w-full p-1 border rounded-sm"
+                      />
+                    ) : (
+                      item.program
+                    )}
+                  </td>
+                  <td className="py-2 px-4">
+                    {item.timestamp}
+                  </td>
+                  <td className="py-2 px-4 text-center">
+                    {editIndex === index ? (
+                      <button
+                        onClick={handleSave}
+                        className="text-green-600 hover:text-green-800 mx-1"
+                      >
+                        <FontAwesomeIcon icon={faSave} />
+                      </button>
+                    ) : (
+                      <button
+                        onClick={() => handleEdit(index)}
+                        className="text-blue-600 hover:text-blue-800 mx-1"
+                      >
+                        <FontAwesomeIcon icon={faPencilAlt} />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => handleDelete(index)}
+                      className="text-red-600 hover:text-red-800 mx-1"
+                    >
+                      <FontAwesomeIcon icon={faTrash} />
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
           </tbody>
         </table>
       </div>

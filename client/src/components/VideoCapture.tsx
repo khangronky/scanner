@@ -40,13 +40,14 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
               imageData,
             }
           );
+          
           if (response.data.error) {
             setError(response.data.error);
           } else {
             handleNewID(response.data);
           }
-        } catch (err) {
-          console.error("Error sending data to server: ", err);
+        } catch (e) {
+          console.error(e);
           setError("Failed to fetch data");
         }
       }

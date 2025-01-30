@@ -1,5 +1,6 @@
 export interface IDInfo {
   name: string;
   studentNumber: string;
-  major: string;
+  program: string;
+  timestamp: string;
 } 
