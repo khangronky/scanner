@@ -43,7 +43,7 @@ This project is a web application for capturing ID information using a webcam.
    ```bash
    cd ocr
    python -m venv venv
-   source venv/Scripts/activate
+   venv/Scripts/activate
    pip install -r requirements.txt
    ```
 
@@ -54,7 +54,7 @@ This project is a web application for capturing ID information using a webcam.
 
    ```bash
    cd client
-   npm start
+   npm run dev
    ```
 
 2. **Start the Backend Server**:
@@ -70,7 +70,7 @@ This project is a web application for capturing ID information using a webcam.
 
    ```bash
    cd ocr
-   source venv/Scripts/activate
+   venv/Scripts/activate
    python main.py
    ```
 
