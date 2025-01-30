@@ -34,7 +34,7 @@ const IDFetch: React.FC = () => {
     return {
       name: studentData.name.trim(),
       studentNumber: studentData.studentNumber.trim(),
-      program: studentData.program || "",
+      program: studentData.program ? studentData.program.trim() : "",
       timestamp: new Date().toLocaleString(),
     };
   };
@@ -51,9 +51,9 @@ const IDFetch: React.FC = () => {
       ) {
         const updatedList = [...idList];
         updatedList[existingEntryIndex] = createStudentRecord({
-          name: newIDInfo.name.trim(),
-          studentNumber: newIDInfo.studentNumber.trim(),
-          program: newIDInfo.program.trim(),
+          name: newIDInfo.name,
+          studentNumber: newIDInfo.studentNumber,
+          program: newIDInfo.program,
         });
         setIdList(updatedList);
         setError(null);
