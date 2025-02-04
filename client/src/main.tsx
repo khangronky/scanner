@@ -4,15 +4,22 @@ import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router";
 import IDFetch from "./pages/IDFetch";
 import IDList from "./pages/IDList";
+import Layout from "./layouts/Layout";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <IDFetch />,
-  },
-  {
-    path: "/idlist",
-    element: <IDList />,
+    element: <Layout />,
+    children: [
+      {
+        path: "/",
+        element: <IDFetch />,
+      },
+      {
+        path: "/idlist",
+        element: <IDList />,
+      },
+    ],
   },
 ]);
 

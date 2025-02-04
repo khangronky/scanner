@@ -144,48 +144,41 @@ const IDFetch: React.FC = () => {
   };
 
   return (
-    <div className="flex justify-center min-h-screen bg-[#f2fafc]">
-      <div className="w-full md:w-4/5 p-4 bg-[#e8f5fc]/80 rounded-lg shadow-md">
-        <h1 className="text-2xl font-bold text-center text-gray-800 mb-4">
-          NEO Culture Technology ID Scanner
-        </h1>
-        <div className="flex flex-col md:flex-row gap-2">
-          <div className="flex-1 md:w-1/2 p-2">
-            <VideoCapture
-              error={error}
-              setError={setError}
-              handleNewID={handleNewID}
-            />
-          </div>
+    <div className="flex flex-col md:flex-row gap-2">
+      <div className="flex-1 md:w-1/2 p-2">
+        <VideoCapture
+          error={error}
+          setError={setError}
+          handleNewID={handleNewID}
+        />
+      </div>
 
-          <div className="flex-1 md:w-1/2 p-2">
-            <StudentList
-              idList={idList}
-              editIndex={editIndex}
-              editName={editName}
-              editStudentNumber={editStudentNumber}
-              editProgram={editProgram}
-              setEditName={setEditName}
-              setEditStudentNumber={setEditStudentNumber}
-              setEditProgram={setEditProgram}
-              handleEdit={handleEdit}
-              handleSave={handleSave}
-              handleDelete={handleDelete}
-              searchTerm={searchTerm}
-              setSearchTerm={setSearchTerm}
-              currentPage={currentPage}
-              setCurrentPage={setCurrentPage}
-              exportToCSV={exportToCSV}
-              handleAdd={handleAdd}
-              newName={newName}
-              setNewName={setNewName}
-              newStudentNumber={newStudentNumber}
-              setNewStudentNumber={setNewStudentNumber}
-              newProgram={newProgram}
-              setNewProgram={setNewProgram}
-            />
-          </div>
-        </div>
+      <div className="flex-1 md:w-1/2 p-2">
+        <StudentList
+          idList={idList}
+          editIndex={editIndex}
+          editName={editName}
+          editStudentNumber={editStudentNumber}
+          editProgram={editProgram}
+          setEditName={setEditName}
+          setEditStudentNumber={setEditStudentNumber}
+          setEditProgram={setEditProgram}
+          handleEdit={handleEdit}
+          handleSave={handleSave}
+          handleDelete={handleDelete}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          exportToCSV={exportToCSV}
+          handleAdd={handleAdd}
+          newName={newName}
+          setNewName={setNewName}
+          newStudentNumber={newStudentNumber}
+          setNewStudentNumber={setNewStudentNumber}
+          newProgram={newProgram}
+          setNewProgram={setNewProgram}
+        />
       </div>
     </div>
   );
