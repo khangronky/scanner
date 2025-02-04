@@ -32,6 +32,7 @@ interface StudentListProps {
   setNewStudentNumber: (number: string) => void;
   newProgram: string;
   setNewProgram: (program: string) => void;
+  error?: string | null;
 }
 
 const StudentList: React.FC<StudentListProps> = ({
@@ -58,9 +59,10 @@ const StudentList: React.FC<StudentListProps> = ({
   setNewStudentNumber,
   newProgram,
   setNewProgram,
+  error,
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const itemsPerPage = 13;
+  const itemsPerPage = 10;
 
   const filteredItems = idList.filter((item) => {
     const nameMatch = item.name
@@ -107,7 +109,12 @@ const StudentList: React.FC<StudentListProps> = ({
 
           <button
             onClick={exportToCSV}
-            className="px-4 py-2 bg-[#4896ac] hover:bg-[#326979] text-white rounded-lg transition"
+            className={`px-4 py-2 bg-[#4896ac] text-white rounded-lg ${
+              currentItems.length === 0
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-[#326979] transition"
+            }`}
+            disabled={currentItems.length === 0}
           >
             Export to CSV
           </button>
@@ -250,6 +257,7 @@ const StudentList: React.FC<StudentListProps> = ({
           </button>
         </div>
       )}
+
       <AddStudentModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -260,6 +268,7 @@ const StudentList: React.FC<StudentListProps> = ({
         newProgram={newProgram}
         setNewProgram={setNewProgram}
         handleAdd={handleAdd}
+        error={error}
       />
     </>
   );

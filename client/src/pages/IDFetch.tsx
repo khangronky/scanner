@@ -10,7 +10,8 @@ const IDFetch: React.FC = () => {
     return storedList;
   });
 
-  const [error, setError] = useState<string | null>(null);
+  const [captureError, setCaptureError] = useState<string | null>(null);
+  const [addError, setAddError] = useState<string | null>(null);
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [editName, setEditName] = useState<string>("");
   const [editStudentNumber, setEditStudentNumber] = useState<string>("");
@@ -55,19 +56,19 @@ const IDFetch: React.FC = () => {
           program: newIDInfo.program,
         });
         setIdList(updatedList);
-        setError(null);
+        setCaptureError(null);
       } else {
-        setError("This record already exists in the list.");
+        setCaptureError("This record already exists in the list.");
       }
     } else {
       setIdList([...idList, createStudentRecord(newIDInfo)]);
-      setError(null);
+      setCaptureError(null);
     }
   };
 
   const handleAdd = () => {
     if (!newName || !newStudentNumber) {
-      setError("Please enter name and student number");
+      setAddError("Please enter name and student number");
       return;
     }
 
@@ -76,7 +77,7 @@ const IDFetch: React.FC = () => {
     );
 
     if (existingEntry) {
-      setError("This record already exists in the list.");
+      setAddError("This record already exists in the list.");
       return;
     }
 
@@ -92,7 +93,7 @@ const IDFetch: React.FC = () => {
     setNewName("");
     setNewStudentNumber("");
     setNewProgram("");
-    setError(null);
+    setAddError(null);
   };
 
   const handleEdit = (index: number) => {
@@ -139,7 +140,7 @@ const IDFetch: React.FC = () => {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.setAttribute("href", url);
-    a.setAttribute("download", "Student_Info_List.csv");
+    a.setAttribute("download", "CapturedStudents.csv");
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -148,8 +149,8 @@ const IDFetch: React.FC = () => {
     <div className="flex flex-col md:flex-row gap-2">
       <div className="flex-1 md:w-1/2 p-2">
         <VideoCapture
-          error={error}
-          setError={setError}
+          error={captureError}
+          setError={setCaptureError}
           handleNewID={handleNewID}
         />
       </div>
@@ -179,6 +180,7 @@ const IDFetch: React.FC = () => {
           setNewStudentNumber={setNewStudentNumber}
           newProgram={newProgram}
           setNewProgram={setNewProgram}
+          error={addError}
         />
         <div className="flex justify-center mt-4">
           <NavLink to="/idlist">

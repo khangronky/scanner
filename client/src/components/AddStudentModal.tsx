@@ -12,6 +12,7 @@ interface AddStudentModalProps {
   newProgram: string;
   setNewProgram: (program: string) => void;
   handleAdd: () => void;
+  error?: string | null;
 }
 
 const AddStudentModal: React.FC<AddStudentModalProps> = ({
@@ -24,6 +25,7 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
   newProgram,
   setNewProgram,
   handleAdd,
+  error,
 }) => {
   if (!isOpen) return null;
 
@@ -66,6 +68,11 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
           }
           className="w-full p-2 mb-4 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4896ac]"
         />
+        {error && (
+          <div className="mb-4">
+            <p className="text-red-500 text-sm">{error}</p>
+          </div>
+        )}
         <button
           onClick={handleAdd}
           className="w-full py-2 bg-[#4896ac] hover:bg-[#326979] text-white rounded-lg transition"
@@ -77,4 +84,4 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
   );
 };
 
-export default AddStudentModal; 
+export default AddStudentModal;
