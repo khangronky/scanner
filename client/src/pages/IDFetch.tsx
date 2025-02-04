@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { IDInfo } from "../types/interfaces";
 import VideoCapture from "../components/VideoCapture";
 import StudentList from "../components/StudentList";
+import { NavLink } from "react-router";
 
 const IDFetch: React.FC = () => {
   const [idList, setIdList] = useState<IDInfo[]>(() => {
@@ -179,6 +180,13 @@ const IDFetch: React.FC = () => {
           newProgram={newProgram}
           setNewProgram={setNewProgram}
         />
+        <div className="flex justify-center mt-4">
+          <NavLink to="/idlist">
+            <button className="bg-[#4896ac] hover:bg-[#326979] text-white px-4 py-2 rounded-lg">
+              View all students
+            </button>
+          </NavLink>
+        </div>
       </div>
     </div>
   );

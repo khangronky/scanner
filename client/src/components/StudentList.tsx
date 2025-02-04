@@ -6,7 +6,6 @@ import {
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import { IDInfo } from "../types/interfaces";
-import { NavLink } from "react-router";
 import AddStudentModal from "./AddStudentModal";
 
 interface StudentListProps {
@@ -251,13 +250,6 @@ const StudentList: React.FC<StudentListProps> = ({
           </button>
         </div>
       )}
-      <div className="flex justify-center mt-4">
-        <NavLink to="/idlist">
-          <button className="bg-[#4896ac] hover:bg-[#326979] text-white px-4 py-2 rounded-lg">
-            View all students
-          </button>
-        </NavLink>
-      </div>
       <AddStudentModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
