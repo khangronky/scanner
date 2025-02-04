@@ -1,7 +1,158 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { IDInfo } from "../types/interfaces";
+import StudentList from "../components/StudentList";
+import { NavLink } from "react-router";
 
 const IDList: React.FC = () => {
-  return <div>IDList</div>;
+  const [idList, setIdList] = useState<IDInfo[]>(() => {
+    const storedList = JSON.parse(localStorage.getItem("idList") || "[]");
+    return storedList;
+  });
+
+  const [addError, setAddError] = useState<string | null>(null);
+  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editName, setEditName] = useState<string>("");
+  const [editStudentNumber, setEditStudentNumber] = useState<string>("");
+  const [editProgram, setEditProgram] = useState<string>("");
+  const [newName, setNewName] = useState<string>("");
+  const [newStudentNumber, setNewStudentNumber] = useState<string>("");
+  const [newProgram, setNewProgram] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [currentPage, setCurrentPage] = useState<number>(1);
+
+  useEffect(() => {
+    localStorage.setItem("idList", JSON.stringify(idList));
+  }, [idList]);
+
+  const createStudentRecord = (studentData: {
+    name: string;
+    studentNumber: string;
+    program: string;
+  }) => {
+    return {
+      name: studentData.name.trim(),
+      studentNumber: studentData.studentNumber.trim(),
+      program: studentData.program ? studentData.program.trim() : "",
+      timestamp: new Date().toLocaleString(),
+    };
+  };
+
+  const handleAdd = () => {
+    if (!newName || !newStudentNumber) {
+      setAddError("Please enter name and student number");
+      return;
+    }
+
+    const existingEntry = idList.find(
+      (item) => item.studentNumber.trim() === newStudentNumber.trim()
+    );
+
+    if (existingEntry) {
+      setAddError("This record already exists in the list.");
+      return;
+    }
+
+    setIdList([
+      ...idList,
+      createStudentRecord({
+        name: newName,
+        studentNumber: newStudentNumber,
+        program: newProgram,
+      }),
+    ]);
+
+    setNewName("");
+    setNewStudentNumber("");
+    setNewProgram("");
+    setAddError(null);
+  };
+
+  const handleEdit = (index: number) => {
+    setEditIndex(index);
+    setEditName(idList[index].name);
+    setEditStudentNumber(idList[index].studentNumber);
+    setEditProgram(idList[index].program);
+  };
+
+  const handleSave = () => {
+    if (editIndex === null) return;
+
+    const updatedList = [...idList];
+    updatedList[editIndex] = createStudentRecord({
+      name: editName,
+      studentNumber: editStudentNumber,
+      program: editProgram,
+    });
+
+    setIdList(updatedList);
+    setEditIndex(null);
+    setEditName("");
+    setEditStudentNumber("");
+    setEditProgram("");
+  };
+
+  const handleDelete = (index: number) => {
+    const updatedList = idList.filter((_, i) => i !== index);
+    setIdList(updatedList);
+  };
+
+  const exportToCSV = () => {
+    const headers = ["Name", "Student Number", "Program", "Timestamp"];
+    const csvRows = [
+      headers.join(","),
+      ...idList.map(
+        (item) =>
+          `${item.name},${item.studentNumber},${item.program},${item.timestamp}`
+      ),
+    ];
+
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "AllStudents.csv");
+    a.click();
+    URL.revokeObjectURL(url);
+  };
+
+  return (
+    <div className="p-2">
+      <StudentList
+        idList={idList}
+        editIndex={editIndex}
+        editName={editName}
+        editStudentNumber={editStudentNumber}
+        editProgram={editProgram}
+        setEditName={setEditName}
+        setEditStudentNumber={setEditStudentNumber}
+        setEditProgram={setEditProgram}
+        handleEdit={handleEdit}
+        handleSave={handleSave}
+        handleDelete={handleDelete}
+        searchTerm={searchTerm}
+        setSearchTerm={setSearchTerm}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        exportToCSV={exportToCSV}
+        handleAdd={handleAdd}
+        newName={newName}
+        setNewName={setNewName}
+        newStudentNumber={newStudentNumber}
+        setNewStudentNumber={setNewStudentNumber}
+        newProgram={newProgram}
+        setNewProgram={setNewProgram}
+        error={addError}
+      />
+      <div className="flex justify-center mt-4">
+        <NavLink to="/">
+          <button className="bg-[#4896ac] hover:bg-[#326979] text-white px-4 py-2 rounded-lg">
+            Back to ID Fetch
+          </button>
+        </NavLink>
+      </div>
+    </div>
+  );
 };
 
 export default IDList;
