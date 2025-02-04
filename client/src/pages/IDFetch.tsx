@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { IDInfo } from "../types/interfaces";
 import VideoCapture from "../components/VideoCapture";
 import StudentList from "../components/StudentList";
-import AddStudentModal from "../components/AddStudentModal";
 
 const IDFetch: React.FC = () => {
   const [idList, setIdList] = useState<IDInfo[]>(() => {
@@ -18,7 +17,6 @@ const IDFetch: React.FC = () => {
   const [newName, setNewName] = useState<string>("");
   const [newStudentNumber, setNewStudentNumber] = useState<string>("");
   const [newProgram, setNewProgram] = useState<string>("");
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [currentPage, setCurrentPage] = useState<number>(1);
 
@@ -89,11 +87,10 @@ const IDFetch: React.FC = () => {
         program: newProgram,
       }),
     ]);
-    
+
     setNewName("");
     setNewStudentNumber("");
     setNewProgram("");
-    setIsModalOpen(false);
     setError(null);
   };
 
@@ -113,7 +110,7 @@ const IDFetch: React.FC = () => {
       studentNumber: editStudentNumber,
       program: editProgram,
     });
-    
+
     setIdList(updatedList);
     setEditIndex(null);
     setEditName("");
@@ -131,7 +128,8 @@ const IDFetch: React.FC = () => {
     const csvRows = [
       headers.join(","),
       ...idList.map(
-        (item) => `${item.name},${item.studentNumber},${item.program},${item.timestamp}`
+        (item) =>
+          `${item.name},${item.studentNumber},${item.program},${item.timestamp}`
       ),
     ];
 
@@ -158,14 +156,6 @@ const IDFetch: React.FC = () => {
               setError={setError}
               handleNewID={handleNewID}
             />
-            <div className="flex justify-center mt-4">
-              <button
-                onClick={() => setIsModalOpen(true)}
-                className="px-4 py-2 bg-[#4896ac] hover:bg-[#326979] text-white rounded-lg transition"
-              >
-                Add Manually
-              </button>
-            </div>
           </div>
 
           <div className="flex-1 md:w-1/2 p-2">
@@ -186,24 +176,19 @@ const IDFetch: React.FC = () => {
               currentPage={currentPage}
               setCurrentPage={setCurrentPage}
               exportToCSV={exportToCSV}
+              handleAdd={handleAdd}
+              newName={newName}
+              setNewName={setNewName}
+              newStudentNumber={newStudentNumber}
+              setNewStudentNumber={setNewStudentNumber}
+              newProgram={newProgram}
+              setNewProgram={setNewProgram}
             />
           </div>
         </div>
-
-        <AddStudentModal
-          isOpen={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          newName={newName}
-          setNewName={setNewName}
-          newStudentNumber={newStudentNumber}
-          setNewStudentNumber={setNewStudentNumber}
-          newProgram={newProgram}
-          setNewProgram={setNewProgram}
-          handleAdd={handleAdd}
-        />
       </div>
     </div>
   );
 };
 
-export default IDFetch; 
+export default IDFetch;

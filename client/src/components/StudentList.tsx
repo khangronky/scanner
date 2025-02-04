@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faPencilAlt,
@@ -7,6 +7,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { IDInfo } from "../types/interfaces";
 import { NavLink } from "react-router";
+import AddStudentModal from "./AddStudentModal";
 
 interface StudentListProps {
   idList: IDInfo[];
@@ -25,6 +26,13 @@ interface StudentListProps {
   currentPage: number;
   setCurrentPage: (page: number) => void;
   exportToCSV: () => void;
+  handleAdd: () => void;
+  newName: string;
+  setNewName: (name: string) => void;
+  newStudentNumber: string;
+  setNewStudentNumber: (number: string) => void;
+  newProgram: string;
+  setNewProgram: (program: string) => void;
 }
 
 const StudentList: React.FC<StudentListProps> = ({
@@ -44,7 +52,15 @@ const StudentList: React.FC<StudentListProps> = ({
   currentPage,
   setCurrentPage,
   exportToCSV,
+  handleAdd,
+  newName,
+  setNewName,
+  newStudentNumber,
+  setNewStudentNumber,
+  newProgram,
+  setNewProgram,
 }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 13;
 
   const filteredItems = idList.filter((item) => {
@@ -82,12 +98,21 @@ const StudentList: React.FC<StudentListProps> = ({
     <>
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Student List</h2>
-        <button
-          onClick={exportToCSV}
-          className="px-4 py-2 bg-[#4896ac] hover:bg-[#326979] text-white rounded-lg transition"
-        >
-          Export to CSV
-        </button>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 bg-[#4896ac] hover:bg-[#326979] text-white rounded-lg transition"
+          >
+            Add Manually
+          </button>
+
+          <button
+            onClick={exportToCSV}
+            className="px-4 py-2 bg-[#4896ac] hover:bg-[#326979] text-white rounded-lg transition"
+          >
+            Export to CSV
+          </button>
+        </div>
       </div>
 
       <input
@@ -120,7 +145,10 @@ const StudentList: React.FC<StudentListProps> = ({
               </tr>
             ) : (
               currentItems.map((item, index) => (
-                <tr key={index} className="border-b hover:bg-gray-50 transition">
+                <tr
+                  key={index}
+                  className="border-b hover:bg-gray-50 transition"
+                >
                   <td className="py-2 px-4">
                     {editIndex === index ? (
                       <input
@@ -163,9 +191,7 @@ const StudentList: React.FC<StudentListProps> = ({
                       item.program
                     )}
                   </td>
-                  <td className="py-2 px-4">
-                    {item.timestamp}
-                  </td>
+                  <td className="py-2 px-4">{item.timestamp}</td>
                   <td className="py-2 px-4 text-center">
                     {editIndex === index ? (
                       <button
@@ -232,8 +258,19 @@ const StudentList: React.FC<StudentListProps> = ({
           </button>
         </NavLink>
       </div>
+      <AddStudentModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        newName={newName}
+        setNewName={setNewName}
+        newStudentNumber={newStudentNumber}
+        setNewStudentNumber={setNewStudentNumber}
+        newProgram={newProgram}
+        setNewProgram={setNewProgram}
+        handleAdd={handleAdd}
+      />
     </>
   );
 };
 
-export default StudentList; 
+export default StudentList;

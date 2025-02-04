@@ -4,4 +4,4 @@ const IDList: React.FC = () => {
   return <div>IDList</div>;
 };
 
-export default IDList; 
+export default IDList;
