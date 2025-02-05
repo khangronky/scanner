@@ -177,6 +177,28 @@ const IDFetch: React.FC = () => {
           onAdd={handleAdd}
           error={addError}
         />
+        <div className="flex justify-center mt-4 gap-4">
+          <button
+            className={`px-4 py-2 bg-red-600 text-white rounded-lg ${
+              students.length === 0
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-red-700 transition"
+            }`}
+            disabled={students.length === 0}
+          >
+            Clear History
+          </button>
+          <button
+            className={`px-4 py-2 bg-green-600 text-white rounded-lg ${
+              students.length === 0
+                ? "opacity-50 cursor-not-allowed"
+                : "hover:bg-green-700 transition"
+            }`}
+            disabled={students.length === 0}
+          >
+            Sync to Database
+          </button>
+        </div>
         <div className="flex justify-center mt-4">
           <NavLink to="/idlist">
             <button className="bg-[#4896ac] hover:bg-[#326979] text-white px-4 py-2 rounded-lg">
