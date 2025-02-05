@@ -1,32 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
 
 interface AddStudentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  newName: string;
-  setNewName: (name: string) => void;
-  newStudentNumber: string;
-  setNewStudentNumber: (number: string) => void;
-  newProgram: string;
-  setNewProgram: (program: string) => void;
-  handleAdd: () => void;
+  onAdd: (name: string, studentNumber: string, program: string) => void;
   error?: string | null;
 }
 
 const AddStudentModal: React.FC<AddStudentModalProps> = ({
   isOpen,
   onClose,
-  newName,
-  setNewName,
-  newStudentNumber,
-  setNewStudentNumber,
-  newProgram,
-  setNewProgram,
-  handleAdd,
+  onAdd,
   error,
 }) => {
+  const [name, setName] = useState("");
+  const [studentNumber, setStudentNumber] = useState("");
+  const [program, setProgram] = useState("");
+
+  const handleAdd = () => {
+    onAdd(name, studentNumber, program);
+    setName("");
+    setStudentNumber("");
+    setProgram("");
+  };
+
   if (!isOpen) return null;
 
   return (
@@ -44,27 +43,27 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
         <input
           type="text"
           placeholder="Name"
-          value={newName}
+          value={name}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setNewName(e.target.value)
+            setName(e.target.value)
           }
           className="w-full p-2 mb-4 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4896ac]"
         />
         <input
           type="text"
           placeholder="Student Number"
-          value={newStudentNumber}
+          value={studentNumber}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setNewStudentNumber(e.target.value)
+            setStudentNumber(e.target.value)
           }
           className="w-full p-2 mb-4 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4896ac]"
         />
         <input
           type="text"
           placeholder="Program"
-          value={newProgram}
+          value={program}
           onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-            setNewProgram(e.target.value)
+            setProgram(e.target.value)
           }
           className="w-full p-2 mb-4 border rounded-lg focus:outline-hidden focus:ring-2 focus:ring-[#4896ac]"
         />

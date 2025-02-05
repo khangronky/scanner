@@ -6,7 +6,6 @@ import {
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
 import { Student } from "../types/interfaces";
-import AddStudentModal from "./AddStudentModal";
 
 interface StudentListProps {
   students: Student[];
@@ -20,19 +19,8 @@ interface StudentListProps {
   handleEdit: (index: number) => void;
   handleSave: () => void;
   handleDelete: (index: number) => void;
-  searchTerm: string;
-  setSearchTerm: (term: string) => void;
-  currentPage: number;
-  setCurrentPage: (page: number) => void;
   exportToCSV: () => void;
   handleAdd: () => void;
-  newName: string;
-  setNewName: (name: string) => void;
-  newStudentNumber: string;
-  setNewStudentNumber: (number: string) => void;
-  newProgram: string;
-  setNewProgram: (program: string) => void;
-  error?: string | null;
 }
 
 const StudentList: React.FC<StudentListProps> = ({
@@ -47,21 +35,11 @@ const StudentList: React.FC<StudentListProps> = ({
   handleEdit,
   handleSave,
   handleDelete,
-  searchTerm,
-  setSearchTerm,
-  currentPage,
-  setCurrentPage,
   exportToCSV,
   handleAdd,
-  newName,
-  setNewName,
-  newStudentNumber,
-  setNewStudentNumber,
-  newProgram,
-  setNewProgram,
-  error,
 }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 10;
 
   const filteredItems = students.filter((item) => {
@@ -101,7 +79,7 @@ const StudentList: React.FC<StudentListProps> = ({
         <h2 className="text-xl font-semibold text-gray-800">Student List</h2>
         <div className="flex gap-2">
           <button
-            onClick={() => setIsModalOpen(true)}
+            onClick={handleAdd}
             className="px-4 py-2 bg-[#4896ac] hover:bg-[#326979] text-white rounded-lg transition"
           >
             Add Manually
@@ -257,19 +235,6 @@ const StudentList: React.FC<StudentListProps> = ({
           </button>
         </div>
       )}
-
-      <AddStudentModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        newName={newName}
-        setNewName={setNewName}
-        newStudentNumber={newStudentNumber}
-        setNewStudentNumber={setNewStudentNumber}
-        newProgram={newProgram}
-        setNewProgram={setNewProgram}
-        handleAdd={handleAdd}
-        error={error}
-      />
     </>
   );
 };

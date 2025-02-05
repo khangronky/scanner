@@ -4,6 +4,7 @@ import { v4 as uuidv4 } from "uuid";
 import VideoCapture from "../components/VideoCapture";
 import StudentList from "../components/StudentList";
 import { NavLink } from "react-router";
+import AddStudentModal from "../components/AddStudentModal";
 
 const IDFetch: React.FC = () => {
   const [students, setStudents] = useState<Student[]>(() => {
@@ -17,11 +18,7 @@ const IDFetch: React.FC = () => {
   const [editName, setEditName] = useState<string>("");
   const [editStudentNumber, setEditStudentNumber] = useState<string>("");
   const [editProgram, setEditProgram] = useState<string>("");
-  const [newName, setNewName] = useState<string>("");
-  const [newStudentNumber, setNewStudentNumber] = useState<string>("");
-  const [newProgram, setNewProgram] = useState<string>("");
-  const [searchTerm, setSearchTerm] = useState<string>("");
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
     localStorage.setItem("students", JSON.stringify(students));
@@ -68,14 +65,14 @@ const IDFetch: React.FC = () => {
     }
   };
 
-  const handleAdd = () => {
-    if (!newName || !newStudentNumber) {
+  const handleAdd = (name: string, studentNumber: string, program: string) => {
+    if (!name || !studentNumber) {
       setAddError("Please enter name and student number");
       return;
     }
 
     const existingEntry = students.find(
-      (item) => item.studentNumber.trim() === newStudentNumber.trim()
+      (item) => item.studentNumber.trim() === studentNumber.trim()
     );
 
     if (existingEntry) {
@@ -86,16 +83,14 @@ const IDFetch: React.FC = () => {
     setStudents([
       ...students,
       createStudentRecord({
-        name: newName,
-        studentNumber: newStudentNumber,
-        program: newProgram,
+        name,
+        studentNumber,
+        program,
       }),
     ]);
 
-    setNewName("");
-    setNewStudentNumber("");
-    setNewProgram("");
     setAddError(null);
+    setIsModalOpen(false);
   };
 
   const handleEdit = (index: number) => {
@@ -170,18 +165,16 @@ const IDFetch: React.FC = () => {
           handleEdit={handleEdit}
           handleSave={handleSave}
           handleDelete={handleDelete}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
           exportToCSV={exportToCSV}
-          handleAdd={handleAdd}
-          newName={newName}
-          setNewName={setNewName}
-          newStudentNumber={newStudentNumber}
-          setNewStudentNumber={setNewStudentNumber}
-          newProgram={newProgram}
-          setNewProgram={setNewProgram}
+          handleAdd={() => setIsModalOpen(true)}
+        />
+        <AddStudentModal
+          isOpen={isModalOpen}
+          onClose={() => {
+            setIsModalOpen(false);
+            setAddError(null);
+          }}
+          onAdd={handleAdd}
           error={addError}
         />
         <div className="flex justify-center mt-4">
