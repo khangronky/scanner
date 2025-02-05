@@ -2,8 +2,11 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const dotenv = require("dotenv");
+const connectDB = require("./configs/db");
 
-dotenv.config();
+dotenv.config({ path: ".env.local" });
+
+connectDB();
 
 app.use(cors());
 
