@@ -14,7 +14,7 @@ const IDFetch: React.FC = () => {
 
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [editID, setEditID] = useState<string | null>(null);
   const [editName, setEditName] = useState<string>("");
   const [editStudentNumber, setEditStudentNumber] = useState<string>("");
   const [editProgram, setEditProgram] = useState<string>("");
@@ -93,32 +93,38 @@ const IDFetch: React.FC = () => {
     setIsModalOpen(false);
   };
 
-  const handleEdit = (index: number) => {
-    setEditIndex(index);
-    setEditName(students[index].name);
-    setEditStudentNumber(students[index].studentNumber);
-    setEditProgram(students[index].program);
+  const handleEdit = (id: string) => {
+    const student = students.find((s) => s.id === id);
+    if (!student) return;
+
+    setEditID(id);
+    setEditName(student.name);
+    setEditStudentNumber(student.studentNumber);
+    setEditProgram(student.program);
   };
 
   const handleSave = () => {
-    if (editIndex === null) return;
+    if (editID === null) return;
 
-    const updatedList = [...students];
-    updatedList[editIndex] = createStudentRecord({
-      name: editName,
-      studentNumber: editStudentNumber,
-      program: editProgram,
-    });
+    const updatedList = students.map((student) =>
+      student.id === editID
+        ? createStudentRecord({
+            name: editName,
+            studentNumber: editStudentNumber,
+            program: editProgram,
+          })
+        : student
+    );
 
     setStudents(updatedList);
-    setEditIndex(null);
+    setEditID(null);
     setEditName("");
     setEditStudentNumber("");
     setEditProgram("");
   };
 
-  const handleDelete = (index: number) => {
-    const updatedList = students.filter((_, i) => i !== index);
+  const handleDelete = (id: string) => {
+    const updatedList = students.filter((s) => s.id !== id);
     setStudents(updatedList);
   };
 
@@ -155,7 +161,7 @@ const IDFetch: React.FC = () => {
       <div className="flex-1 md:w-1/2 p-2">
         <StudentList
           students={students}
-          editIndex={editIndex}
+          editID={editID}
           editName={editName}
           editStudentNumber={editStudentNumber}
           editProgram={editProgram}

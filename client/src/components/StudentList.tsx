@@ -9,23 +9,23 @@ import { Student } from "../types/interfaces";
 
 interface StudentListProps {
   students: Student[];
-  editIndex: number | null;
+  editID: string | null;
   editName: string;
   editStudentNumber: string;
   editProgram: string;
   setEditName: (name: string) => void;
   setEditStudentNumber: (number: string) => void;
   setEditProgram: (program: string) => void;
-  handleEdit: (index: number) => void;
+  handleEdit: (id: string) => void;
   handleSave: () => void;
-  handleDelete: (index: number) => void;
+  handleDelete: (id: string) => void;
   exportToCSV: () => void;
   handleAdd: () => void;
 }
 
 const StudentList: React.FC<StudentListProps> = ({
   students,
-  editIndex,
+  editID,
   editName,
   editStudentNumber,
   editProgram,
@@ -128,13 +128,13 @@ const StudentList: React.FC<StudentListProps> = ({
                 </td>
               </tr>
             ) : (
-              currentItems.map((item, index) => (
+              currentItems.map((item) => (
                 <tr
-                  key={index}
+                  key={item.id}
                   className="border-b hover:bg-gray-50 transition"
                 >
                   <td className="py-2 px-4">
-                    {editIndex === index ? (
+                    {editID === item.id ? (
                       <input
                         type="text"
                         value={editName}
@@ -148,7 +148,7 @@ const StudentList: React.FC<StudentListProps> = ({
                     )}
                   </td>
                   <td className="py-2 px-4">
-                    {editIndex === index ? (
+                    {editID === item.id ? (
                       <input
                         type="text"
                         value={editStudentNumber}
@@ -162,7 +162,7 @@ const StudentList: React.FC<StudentListProps> = ({
                     )}
                   </td>
                   <td className="py-2 px-4">
-                    {editIndex === index ? (
+                    {editID === item.id ? (
                       <input
                         type="text"
                         value={editProgram}
@@ -177,7 +177,7 @@ const StudentList: React.FC<StudentListProps> = ({
                   </td>
                   <td className="py-2 px-4">{item.timestamp}</td>
                   <td className="py-2 px-4 text-center">
-                    {editIndex === index ? (
+                    {editID === item.id ? (
                       <button
                         onClick={handleSave}
                         className="text-green-600 hover:text-green-800 mx-1"
@@ -186,14 +186,14 @@ const StudentList: React.FC<StudentListProps> = ({
                       </button>
                     ) : (
                       <button
-                        onClick={() => handleEdit(index)}
+                        onClick={() => handleEdit(item.id)}
                         className="text-blue-600 hover:text-blue-800 mx-1"
                       >
                         <FontAwesomeIcon icon={faPencilAlt} />
                       </button>
                     )}
                     <button
-                      onClick={() => handleDelete(index)}
+                      onClick={() => handleDelete(item.id)}
                       className="text-red-600 hover:text-red-800 mx-1"
                     >
                       <FontAwesomeIcon icon={faTrash} />
