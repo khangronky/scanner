@@ -5,11 +5,11 @@ import {
   faTrash,
   faSave,
 } from "@fortawesome/free-solid-svg-icons";
-import { IDInfo } from "../types/interfaces";
+import { Student } from "../types/interfaces";
 import AddStudentModal from "./AddStudentModal";
 
 interface StudentListProps {
-  idList: IDInfo[];
+  students: Student[];
   editIndex: number | null;
   editName: string;
   editStudentNumber: string;
@@ -36,7 +36,7 @@ interface StudentListProps {
 }
 
 const StudentList: React.FC<StudentListProps> = ({
-  idList,
+  students,
   editIndex,
   editName,
   editStudentNumber,
@@ -64,7 +64,7 @@ const StudentList: React.FC<StudentListProps> = ({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const itemsPerPage = 10;
 
-  const filteredItems = idList.filter((item) => {
+  const filteredItems = students.filter((item) => {
     const nameMatch = item.name
       .toLowerCase()
       .includes(searchTerm.toLowerCase());

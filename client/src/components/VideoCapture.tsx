@@ -1,17 +1,17 @@
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import axios from "axios";
-import { IDInfo } from "../types/interfaces";
+import { Student } from "../types/interfaces";
 
 interface VideoCaptureProps {
   error: string | null;
   setError: (error: string | null) => void;
-  handleNewID: (newIDInfo: IDInfo) => void;
+  handleNewStudent: (newStudent: Student) => void;
 }
 
 const VideoCapture: React.FC<VideoCaptureProps> = ({
   error,
   setError,
-  handleNewID,
+  handleNewStudent,
 }) => {
   const [isAutoCapture, setIsAutoCapture] = useState<boolean>(false);
   const [isCameraOn, setIsCameraOn] = useState<boolean>(false);
@@ -40,11 +40,11 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
               imageData,
             }
           );
-          
+
           if (response.data.error) {
             setError(response.data.error);
           } else {
-            handleNewID(response.data);
+            handleNewStudent(response.data);
           }
         } catch (e) {
           console.error(e);
@@ -52,7 +52,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         }
       }
     }
-  }, [handleNewID, setError]);
+  }, [handleNewStudent, setError]);
 
   useEffect(() => {
     if (isCameraOn) {
@@ -163,4 +163,4 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   );
 };
 
-export default VideoCapture; 
+export default VideoCapture;

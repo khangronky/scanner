@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { IDInfo } from "../types/interfaces";
+import { Student } from "../types/interfaces";
+import { v4 as uuidv4 } from "uuid";
 import StudentList from "../components/StudentList";
 import { NavLink } from "react-router";
 
 const IDList: React.FC = () => {
-  const [idList, setIdList] = useState<IDInfo[]>(() => {
-    const storedList = JSON.parse(localStorage.getItem("idList") || "[]");
-    return storedList;
+  const [students, setStudents] = useState<Student[]>(() => {
+    const storedStudents = JSON.parse(localStorage.getItem("students") || "[]");
+    return storedStudents;
   });
 
   const [addError, setAddError] = useState<string | null>(null);
@@ -21,8 +22,8 @@ const IDList: React.FC = () => {
   const [currentPage, setCurrentPage] = useState<number>(1);
 
   useEffect(() => {
-    localStorage.setItem("idList", JSON.stringify(idList));
-  }, [idList]);
+    localStorage.setItem("students", JSON.stringify(students));
+  }, [students]);
 
   const createStudentRecord = (studentData: {
     name: string;
@@ -30,6 +31,7 @@ const IDList: React.FC = () => {
     program: string;
   }) => {
     return {
+      id: uuidv4(),
       name: studentData.name.trim(),
       studentNumber: studentData.studentNumber.trim(),
       program: studentData.program ? studentData.program.trim() : "",
@@ -43,7 +45,7 @@ const IDList: React.FC = () => {
       return;
     }
 
-    const existingEntry = idList.find(
+    const existingEntry = students.find(
       (item) => item.studentNumber.trim() === newStudentNumber.trim()
     );
 
@@ -52,8 +54,8 @@ const IDList: React.FC = () => {
       return;
     }
 
-    setIdList([
-      ...idList,
+    setStudents([
+      ...students,
       createStudentRecord({
         name: newName,
         studentNumber: newStudentNumber,
@@ -69,22 +71,22 @@ const IDList: React.FC = () => {
 
   const handleEdit = (index: number) => {
     setEditIndex(index);
-    setEditName(idList[index].name);
-    setEditStudentNumber(idList[index].studentNumber);
-    setEditProgram(idList[index].program);
+    setEditName(students[index].name);
+    setEditStudentNumber(students[index].studentNumber);
+    setEditProgram(students[index].program);
   };
 
   const handleSave = () => {
     if (editIndex === null) return;
 
-    const updatedList = [...idList];
+    const updatedList = [...students];
     updatedList[editIndex] = createStudentRecord({
       name: editName,
       studentNumber: editStudentNumber,
       program: editProgram,
     });
 
-    setIdList(updatedList);
+    setStudents(updatedList);
     setEditIndex(null);
     setEditName("");
     setEditStudentNumber("");
@@ -92,15 +94,15 @@ const IDList: React.FC = () => {
   };
 
   const handleDelete = (index: number) => {
-    const updatedList = idList.filter((_, i) => i !== index);
-    setIdList(updatedList);
+    const updatedList = students.filter((_, i) => i !== index);
+    setStudents(updatedList);
   };
 
   const exportToCSV = () => {
     const headers = ["Name", "Student Number", "Program", "Timestamp"];
     const csvRows = [
       headers.join(","),
-      ...idList.map(
+      ...students.map(
         (item) =>
           `${item.name},${item.studentNumber},${item.program},${item.timestamp}`
       ),
@@ -119,7 +121,7 @@ const IDList: React.FC = () => {
   return (
     <div className="p-2">
       <StudentList
-        idList={idList}
+        students={students}
         editIndex={editIndex}
         editName={editName}
         editStudentNumber={editStudentNumber}
