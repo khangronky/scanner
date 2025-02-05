@@ -29,7 +29,7 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center">
+    <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg w-96">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Add New Student</h2>

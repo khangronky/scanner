@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import { Student } from "../types/interfaces";
 import { v4 as uuidv4 } from "uuid";
 import StudentList from "../components/StudentList";
@@ -6,11 +7,9 @@ import { NavLink } from "react-router";
 import AddStudentModal from "../components/AddStudentModal";
 
 const IDList: React.FC = () => {
-  const [students, setStudents] = useState<Student[]>(() => {
-    const storedStudents = JSON.parse(localStorage.getItem("students") || "[]");
-    return storedStudents;
-  });
-
+  const [students, setStudents] = useState<Student[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
   const [editID, setEditID] = useState<string | null>(null);
   const [editName, setEditName] = useState<string>("");
@@ -19,8 +18,34 @@ const IDList: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    localStorage.setItem("students", JSON.stringify(students));
-  }, [students]);
+    fetchStudents();
+  }, []);
+
+  const fetchStudents = async () => {
+    try {
+      const { data } = await axios.get("http://localhost:5000/api/v1/students");
+      const students = data.students.map(
+        (student: {
+          _id: string;
+          name: string;
+          studentNumber: string;
+          program: string;
+          createdAt: string;
+        }) => ({
+          id: student._id,
+          name: student.name,
+          studentNumber: student.studentNumber,
+          program: student.program,
+          timestamp: student.createdAt,
+        })
+      );
+      setStudents(students);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to fetch students");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const createStudentRecord = (studentData: {
     name: string;
@@ -36,32 +61,30 @@ const IDList: React.FC = () => {
     };
   };
 
-  const handleAdd = (name: string, studentNumber: string, program: string) => {
+  const handleAdd = async (
+    name: string,
+    studentNumber: string,
+    program: string
+  ) => {
     if (!name || !studentNumber) {
       setAddError("Please enter name and student number");
       return;
     }
 
-    const existingEntry = students.find(
-      (item) => item.studentNumber.trim() === studentNumber.trim()
-    );
+    const newStudent = createStudentRecord({
+      name,
+      studentNumber,
+      program,
+    });
 
-    if (existingEntry) {
-      setAddError("This record already exists in the list.");
-      return;
+    try {
+      await axios.post("http://localhost:5000/api/v1/students", newStudent);
+      setAddError(null);
+      setIsModalOpen(false);
+      await fetchStudents();
+    } catch (err) {
+      setAddError(err instanceof Error ? err.message : "Failed to add student");
     }
-
-    setStudents([
-      ...students,
-      createStudentRecord({
-        name,
-        studentNumber,
-        program,
-      }),
-    ]);
-
-    setAddError(null);
-    setIsModalOpen(false);
   };
 
   const handleEdit = (id: string) => {
@@ -74,29 +97,37 @@ const IDList: React.FC = () => {
     setEditProgram(student.program);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (editID === null) return;
 
-    const updatedList = students.map((student) =>
-      student.id === editID
-        ? createStudentRecord({
-            name: editName,
-            studentNumber: editStudentNumber,
-            program: editProgram,
-          })
-        : student
-    );
+    const updatedStudent = createStudentRecord({
+      name: editName,
+      studentNumber: editStudentNumber,
+      program: editProgram,
+    });
 
-    setStudents(updatedList);
-    setEditID(null);
-    setEditName("");
-    setEditStudentNumber("");
-    setEditProgram("");
+    try {
+      await axios.put(
+        `http://localhost:5000/api/v1/students/${editID}`,
+        updatedStudent
+      );
+      setEditID(null);
+      setEditName("");
+      setEditStudentNumber("");
+      setEditProgram("");
+      await fetchStudents();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to update student");
+    }
   };
 
-  const handleDelete = (id: string) => {
-    const updatedList = students.filter((s) => s.id !== id);
-    setStudents(updatedList);
+  const handleDelete = async (id: string) => {
+    try {
+      await axios.delete(`http://localhost:5000/api/v1/students/${id}`);
+      await fetchStudents();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete student");
+    }
   };
 
   const exportToCSV = () => {
@@ -118,6 +149,14 @@ const IDList: React.FC = () => {
     a.click();
     URL.revokeObjectURL(url);
   };
+
+  if (loading) {
+    return <div className="p-4 text-center">Loading students...</div>;
+  }
+
+  if (error) {
+    return <div className="p-4 text-center text-red-500">{error}</div>;
+  }
 
   return (
     <div className="p-2">

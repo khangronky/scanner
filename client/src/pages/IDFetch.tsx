@@ -5,6 +5,7 @@ import VideoCapture from "../components/VideoCapture";
 import StudentList from "../components/StudentList";
 import { NavLink } from "react-router";
 import AddStudentModal from "../components/AddStudentModal";
+import axios from "axios";
 
 const IDFetch: React.FC = () => {
   const [students, setStudents] = useState<Student[]>(() => {
@@ -14,6 +15,8 @@ const IDFetch: React.FC = () => {
 
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
+  const [uploadError, setUploadError] = useState<string | null>(null);
+  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
   const [editID, setEditID] = useState<string | null>(null);
   const [editName, setEditName] = useState<string>("");
   const [editStudentNumber, setEditStudentNumber] = useState<string>("");
@@ -38,29 +41,25 @@ const IDFetch: React.FC = () => {
     };
   };
 
-  const handleNewStudent = (newStudent: Student) => {
+  const handleNewStudent = (name: string, studentNumber: string) => {
     const existingEntryIndex = students.findIndex(
-      (item) => item.studentNumber.trim() === newStudent.studentNumber.trim()
+      (item) => item.studentNumber.trim() === studentNumber.trim()
     );
 
     if (existingEntryIndex !== -1) {
-      if (
-        students[existingEntryIndex].name.trim().toLowerCase() !==
-        newStudent.name.trim().toLowerCase()
-      ) {
-        const updatedList = [...students];
-        updatedList[existingEntryIndex] = createStudentRecord({
-          name: newStudent.name,
-          studentNumber: newStudent.studentNumber,
-          program: newStudent.program,
-        });
-        setStudents(updatedList);
-        setCaptureError(null);
-      } else {
-        setCaptureError("This record already exists in the list.");
-      }
+      const updatedList = [...students];
+      updatedList[existingEntryIndex] = createStudentRecord({
+        name: name,
+        studentNumber: studentNumber,
+        program: "",
+      });
+      setStudents(updatedList);
+      setCaptureError(null);
     } else {
-      setStudents([...students, createStudentRecord(newStudent)]);
+      setStudents([
+        ...students,
+        createStudentRecord({ name, studentNumber, program: "" }),
+      ]);
       setCaptureError(null);
     }
   };
@@ -68,15 +67,6 @@ const IDFetch: React.FC = () => {
   const handleAdd = (name: string, studentNumber: string, program: string) => {
     if (!name || !studentNumber) {
       setAddError("Please enter name and student number");
-      return;
-    }
-
-    const existingEntry = students.find(
-      (item) => item.studentNumber.trim() === studentNumber.trim()
-    );
-
-    if (existingEntry) {
-      setAddError("This record already exists in the list.");
       return;
     }
 
@@ -148,6 +138,46 @@ const IDFetch: React.FC = () => {
     URL.revokeObjectURL(url);
   };
 
+  const handleClear = () => {
+    setStudents([]);
+  };
+
+  const handleUpload = async () => {
+    setUploadError(null);
+    setUploadSuccess(null);
+
+    const uploadPromises = students.map((student) => {
+      return axios.post("http://localhost:5000/api/v1/students", {
+        name: student.name,
+        studentNumber: student.studentNumber,
+        program: student.program,
+        timestamp: student.timestamp,
+      });
+    });
+
+    try {
+      const results = await Promise.allSettled(uploadPromises);
+
+      const successfulUploads = results.filter(
+        (result) => result.status === "fulfilled"
+      );
+
+      if (successfulUploads.length > 0) {
+        const remainingStudents = students.filter((_, index) => {
+          const result = results[index];
+          return result.status === "rejected";
+        });
+        setStudents(remainingStudents);
+        setUploadSuccess(
+          `Successfully uploaded ${successfulUploads.length} student(s)`
+        );
+      }
+    } catch (error) {
+      console.log(error);
+      setUploadError("Failed to upload students to database");
+    }
+  };
+
   return (
     <div className="flex flex-col md:flex-row gap-2">
       <div className="flex-1 md:w-1/2 p-2">
@@ -191,6 +221,7 @@ const IDFetch: React.FC = () => {
                 : "hover:bg-red-700 transition"
             }`}
             disabled={students.length === 0}
+            onClick={handleClear}
           >
             Clear History
           </button>
@@ -201,10 +232,17 @@ const IDFetch: React.FC = () => {
                 : "hover:bg-green-700 transition"
             }`}
             disabled={students.length === 0}
+            onClick={handleUpload}
           >
-            Sync to Database
+            Upload to Database
           </button>
         </div>
+        {uploadError && (
+          <div className="p-4 text-center text-red-500">{uploadError}</div>
+        )}
+        {uploadSuccess && (
+          <div className="p-4 text-center text-green-500">{uploadSuccess}</div>
+        )}
         <div className="flex justify-center mt-4">
           <NavLink to="/idlist">
             <button className="bg-[#4896ac] hover:bg-[#326979] text-white px-4 py-2 rounded-lg">

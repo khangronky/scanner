@@ -1,11 +1,10 @@
 import React, { useEffect, useRef, useCallback, useState } from "react";
 import axios from "axios";
-import { Student } from "../types/interfaces";
 
 interface VideoCaptureProps {
   error: string | null;
   setError: (error: string | null) => void;
-  handleNewStudent: (newStudent: Student) => void;
+  handleNewStudent: (name: string, studentNumber: string) => void;
 }
 
 const VideoCapture: React.FC<VideoCaptureProps> = ({
@@ -44,7 +43,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
           if (response.data.error) {
             setError(response.data.error);
           } else {
-            handleNewStudent(response.data);
+            handleNewStudent(response.data.name, response.data.studentNumber);
           }
         } catch (e) {
           console.error(e);
