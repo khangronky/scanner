@@ -2,7 +2,7 @@
 
 This project is a web application for capturing ID information using a webcam.
 
-## Installation
+## Project Setup
 
 1. **Clone the repository**:
 
@@ -27,13 +27,10 @@ This project is a web application for capturing ID information using a webcam.
 
    After installing Tesseract OCR, ensure that its executable is in: `C:\Program Files\Tesseract-OCR\tesseract.exe`
 
-   Navigate to the OCR directory and run:
+   Run the following command:
 
    ```bash
-   cd ocr
-   python -m venv venv
-   venv/Scripts/activate
-   pip install -r requirements.txt
+   npm run ocr:install
    ```
 
 ## Running the Project
@@ -45,16 +42,7 @@ This project is a web application for capturing ID information using a webcam.
    npm run dev
    ```
 
-2. **Start the OCR Service**:
-   Navigate to the ocr directory and run:
-
-   ```bash
-   cd ocr
-   venv/Scripts/activate
-   python main.py
-   ```
-
-3. **Open in Browser**:
+2. **Open in Browser**:
    After starting the application, open your web browser and navigate to:
 
    ```bash
