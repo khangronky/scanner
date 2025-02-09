@@ -7,31 +7,20 @@ This project is a web application for capturing ID information using a webcam.
 1. **Clone the repository**:
 
    ```bash
-   git clone https://github.com/Railroad-Wrecker/NCT-ID-Scanner.git
+   git clone https://github.com/khangronky/NCT-ID-Scanner.git
    cd NCT-ID-Scanner
    ```
 
-2. **Install Node.js packages** (for the frontend):
+2. **Install Node.js packages**:
    Make sure you have Node.js and npm installed.
 
-   Navigate to the frontend directory and run:
+   Run the following command:
 
    ```bash
-   cd client
    npm install
    ```
 
-3. **Install Node.js packages** (for the backend):
-   Make sure you have Node.js and npm installed.
-
-   Navigate to the backend directory and run:
-
-   ```bash
-   cd server
-   npm install
-   ```
-
-4. **Install the required Python packages**:
+3. **Install the required Python packages**:
    Make sure you have Python and pip installed.
 
    Make sure you have the Tesseract OCR installed. This can be found [here](https://github.com/UB-Mannheim/tesseract/wiki)
@@ -49,23 +38,14 @@ This project is a web application for capturing ID information using a webcam.
 
 ## Running the Project
 
-1. **Start the Frontend Application**:
-   Navigate to the frontend directory and run:
+1. **Start the Application**:
+   Run the following command:
 
    ```bash
-   cd client
    npm run dev
    ```
 
-2. **Start the Backend Server**:
-   Navigate to the backend directory and run:
-
-   ```bash
-   cd server
-   npm run dev
-   ```
-
-3. **Start the OCR Service**:
+2. **Start the OCR Service**:
    Navigate to the ocr directory and run:
 
    ```bash
@@ -74,11 +54,11 @@ This project is a web application for capturing ID information using a webcam.
    python main.py
    ```
 
-4. **Open in Browser**:
+3. **Open in Browser**:
    After starting the application, open your web browser and navigate to:
 
    ```bash
-   http://localhost:5173
+   http://localhost:3000
    ```
 
 ## Usage
