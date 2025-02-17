@@ -1,4 +1,4 @@
-# NEO Culture Technology ID Scanner
+# NEO ID Scanner
 
 This project is a web application for capturing ID information using a webcam.
 
