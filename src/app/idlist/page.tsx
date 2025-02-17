@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
 import { IStudent } from "@/lib/models/Student";
 import { v4 as uuidv4 } from "uuid";
@@ -9,6 +9,8 @@ import AddStudentModal from "@/components/AddStudentModal";
 import Link from "next/link";
 
 const IDList: React.FC = () => {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
   const [students, setStudents] = useState<IStudent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -19,14 +21,10 @@ const IDList: React.FC = () => {
   const [editProgram, setEditProgram] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  useEffect(() => {
-    fetchStudents();
-  }, []);
-
-  const fetchStudents = async () => {
+  const fetchStudents = useCallback(async () => {
     try {
-      const { data } = await axios.get("http://localhost:3000/api/students");
-      const students = data.students.map(
+      const { data } = await axios.get(`${apiUrl}/api/students`);
+      const students: IStudent[] = data.students.map(
         (student: {
           _id: string;
           name: string;
@@ -47,7 +45,11 @@ const IDList: React.FC = () => {
     } finally {
       setLoading(false);
     }
-  };
+  }, [apiUrl]);
+
+  useEffect(() => {
+    fetchStudents();
+  }, [fetchStudents]);
 
   const createStudentRecord = (studentData: {
     name: string;
@@ -80,7 +82,7 @@ const IDList: React.FC = () => {
     });
 
     try {
-      await axios.post("http://localhost:3000/api/students", newStudent);
+      await axios.post(`${apiUrl}/api/students`, newStudent);
       setAddError(null);
       setIsModalOpen(false);
       await fetchStudents();
@@ -109,10 +111,7 @@ const IDList: React.FC = () => {
     });
 
     try {
-      await axios.put(
-        `http://localhost:3000/api/students/${editID}`,
-        updatedStudent
-      );
+      await axios.put(`${apiUrl}/api/students/${editID}`, updatedStudent);
       setEditID(null);
       setEditName("");
       setEditStudentNumber("");
@@ -125,7 +124,7 @@ const IDList: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`http://localhost:3000/api/students/${id}`);
+      await axios.delete(`${apiUrl}/api/students/${id}`);
       await fetchStudents();
     } catch (err) {
       setError(err instanceof Error ? err.message : "Failed to delete student");

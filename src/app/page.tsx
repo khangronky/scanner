@@ -10,6 +10,8 @@ import { IStudent } from "@/lib/models/Student";
 import Link from "next/link";
 
 export default function Page() {
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+
   const [students, setStudents] = useState<IStudent[]>(() => {
     if (typeof window !== "undefined") {
       const storedStudents = localStorage.getItem("students");
@@ -150,7 +152,7 @@ export default function Page() {
     setUploadSuccess("");
 
     const uploadPromises = students.map((student) =>
-      axios.post("http://localhost:3000/api/students", {
+      axios.post(`${apiUrl}/api/students`, {
         name: student.name,
         studentNumber: student.studentNumber,
         program: student.program,

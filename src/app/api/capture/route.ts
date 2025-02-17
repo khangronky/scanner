@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import axios from "axios";
 
-const OCR_SERVICE_URL = process.env.OCR_SERVICE_URL || "";
+const ocrServiceUrl = process.env.OCR_SERVICE_URL || "http://localhost:5500";
 
 export async function POST(request: Request) {
   try {
@@ -16,7 +16,9 @@ export async function POST(request: Request) {
     }
 
     // Forward the request to the OCR service
-    const response = await axios.post(OCR_SERVICE_URL, { imageData });
+    const response = await axios.post(ocrServiceUrl + "/capture", {
+      imageData,
+    });
     return NextResponse.json(response.data);
   } catch (error) {
     console.error("Error processing image:", error);
