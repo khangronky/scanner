@@ -32,7 +32,6 @@ describe("Capture API", () => {
       data: {
         name: "John Doe",
         studentNumber: "12345",
-        program: "Computer Science",
       },
     };
 
