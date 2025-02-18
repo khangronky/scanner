@@ -19,12 +19,12 @@ export async function POST(request: Request) {
     const response = await axios.post(ocrServiceUrl + "/capture", {
       imageData,
     });
+
     return NextResponse.json(response.data);
-  } catch (error) {
-    console.error("Error processing image:", error);
+  } catch {
     return NextResponse.json(
       { error: "Failed to process image" },
-      { status: 500 }
+      { status: 400 }
     );
   }
 }

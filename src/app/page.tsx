@@ -12,14 +12,7 @@ import Link from "next/link";
 export default function Page() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
-  const [students, setStudents] = useState<IStudent[]>(() => {
-    if (typeof window !== "undefined") {
-      const storedStudents = localStorage.getItem("students");
-      return storedStudents ? JSON.parse(storedStudents) : [];
-    }
-    return [];
-  });
-
+  const [students, setStudents] = useState<IStudent[]>([]);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -29,6 +22,13 @@ export default function Page() {
   const [editStudentNumber, setEditStudentNumber] = useState<string>("");
   const [editProgram, setEditProgram] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  useEffect(() => {
+    const storedStudents = localStorage.getItem("students");
+    if (storedStudents) {
+      setStudents(JSON.parse(storedStudents));
+    }
+  }, []);
 
   useEffect(() => {
     localStorage.setItem("students", JSON.stringify(students));
@@ -178,7 +178,9 @@ export default function Page() {
         );
       }
     } catch (error) {
-      console.error("Error uploading students:", error);
+      if (process.env.NODE_ENV === "development") {
+        console.error(error);
+      }
       setUploadError("Failed to upload students to database");
     }
   };

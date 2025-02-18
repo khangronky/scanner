@@ -17,9 +17,11 @@ export async function GET(
         { status: 404 }
       );
     }
+
     return NextResponse.json({ student });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
+
     return NextResponse.json(
       { message: "Error fetching student" },
       { status: 500 }
@@ -54,8 +56,9 @@ export async function PUT(
     }
 
     return NextResponse.json({ student });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
+
     return NextResponse.json(
       { message: "Error updating student" },
       { status: 500 }
@@ -81,8 +84,9 @@ export async function DELETE(
     }
 
     return NextResponse.json({ message: "Student deleted" });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
+
     return NextResponse.json(
       { message: "Error deleting student" },
       { status: 500 }

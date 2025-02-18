@@ -91,9 +91,9 @@ def capture():
 
     if id_info:
         name, student_number = id_info
-        return jsonify({'name': name.strip(), 'studentNumber': student_number.strip()})
+        return jsonify({'name': name.strip(), 'studentNumber': student_number.strip()}), 200
     else:
-        return jsonify({'error': 'No match found in the provided ID data'}), 200
+        return jsonify({'error': 'No match found in the provided ID data'}), 400
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=5500)

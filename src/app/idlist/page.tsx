@@ -40,8 +40,11 @@ const IDList: React.FC = () => {
         })
       );
       setStudents(students);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to fetch students");
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error(error);
+      }
+      setError("Failed to fetch students");
     } finally {
       setLoading(false);
     }
@@ -86,8 +89,11 @@ const IDList: React.FC = () => {
       setAddError(null);
       setIsModalOpen(false);
       await fetchStudents();
-    } catch (err) {
-      setAddError(err instanceof Error ? err.message : "Failed to add student");
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error(error);
+      }
+      setAddError("Failed to add student");
     }
   };
 
@@ -117,8 +123,11 @@ const IDList: React.FC = () => {
       setEditStudentNumber("");
       setEditProgram("");
       await fetchStudents();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to update student");
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error(error);
+      }
+      setError("Failed to update student");
     }
   };
 
@@ -126,8 +135,11 @@ const IDList: React.FC = () => {
     try {
       await axios.delete(`${apiUrl}/api/students/${id}`);
       await fetchStudents();
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to delete student");
+    } catch (error) {
+      if (process.env.NODE_ENV === "development") {
+        console.error(error);
+      }
+      setError("Failed to delete student");
     }
   };
 

@@ -7,8 +7,9 @@ export async function GET() {
     await connectDB();
     const students = await Student.find();
     return NextResponse.json({ students });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
+
     return NextResponse.json(
       { message: "Error fetching students" },
       { status: 500 }
@@ -29,8 +30,9 @@ export async function POST(request: Request) {
     });
 
     return NextResponse.json({ student });
-  } catch (error: unknown) {
+  } catch (error) {
     console.error(error);
+
     return NextResponse.json(
       { message: "Error creating student" },
       { status: 500 }

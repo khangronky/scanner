@@ -37,21 +37,16 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         const imageData = canvasRef.current.toDataURL("image/png");
 
         try {
-          const response = await axios.post(`${apiUrl}/api/capture`, {
+          const { data } = await axios.post(`${apiUrl}/api/capture`, {
             imageData,
           });
 
-          if (response.data.error) {
-            setError(response.data.error);
-          } else if (response.data.name && response.data.studentNumber) {
-            handleNewStudent(response.data.name, response.data.studentNumber);
+          if (data.name && data.studentNumber) {
+            handleNewStudent(data.name, data.studentNumber);
             setError(null);
-          } else {
-            setError("Could not detect student information from the ID");
           }
-        } catch (err) {
-          console.error("Error processing image:", err);
-          setError("Failed to process image. Please try again.");
+        } catch {
+          setError("Could not detect student information from the ID card.");
         }
       }
     }
@@ -67,8 +62,10 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
             streamRef.current = stream;
           }
         })
-        .catch((err) => {
-          console.error("Error accessing webcam: ", err);
+        .catch((error) => {
+          if (process.env.NODE_ENV === "development") {
+            console.error(error);
+          }
           setError("Can not access the webcam.");
         });
     } else {
@@ -151,10 +148,12 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         <button
           onClick={toggleAutoCapture}
           className={`px-4 py-2 rounded-lg font-medium ${
+            isCameraOn ? "" : "opacity-50 cursor-not-allowed"
+          } ${
             isAutoCapture
-              ? "bg-red-500 hover:bg-red-600 text-white"
-              : "bg-[#4896ac] hover:bg-[#326979] text-white"
-          }`}
+              ? `bg-red-500 ${isCameraOn && "hover:bg-red-600"} text-white`
+              : `bg-[#4896ac] ${isCameraOn && "hover:bg-[#326979]"} text-white`
+          } `}
           disabled={!isCameraOn}
         >
           {isAutoCapture ? "Stop Auto Capture" : "Start Auto Capture"}
