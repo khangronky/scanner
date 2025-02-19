@@ -31,7 +31,7 @@ export default function RootLayout({
           </header>
 
           <main className="flex-grow">
-            <div className="container mx-auto px-2 sm:px-4 lg:px-6 py-2">
+            <div className="container mx-auto px-2 md:px-4 lg:px-6 py-8">
               {children}
             </div>
           </main>
