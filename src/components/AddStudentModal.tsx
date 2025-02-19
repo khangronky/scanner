@@ -1,8 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark } from "@fortawesome/free-solid-svg-icons";
+import { X } from "lucide-react";
 
 interface AddStudentModalProps {
   isOpen: boolean;
@@ -36,12 +35,10 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Add New Student</h2>
           <button
-            role="button"
-            aria-label="Close"
             onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
+            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
           >
-            <FontAwesomeIcon icon={faCircleXmark} />
+            <X className="w-6 h-6" />
           </button>
         </div>
         <input

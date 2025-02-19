@@ -1,10 +1,5 @@
 import React, { useState } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import {
-  faPencilAlt,
-  faTrash,
-  faSave,
-} from "@fortawesome/free-solid-svg-icons";
+import { Pencil, Trash2, Save } from "lucide-react";
 import { IStudent } from "@/lib/models/Student";
 
 interface StudentListProps {
@@ -202,23 +197,23 @@ const StudentList: React.FC<StudentListProps> = ({
                     {editID === item.id ? (
                       <button
                         onClick={handleSave}
-                        className="text-green-600 hover:text-green-800 mx-1"
+                        className="text-green-500 hover:text-green-700 mr-2"
                       >
-                        <FontAwesomeIcon icon={faSave} />
+                        <Save className="w-5 h-5" />
                       </button>
                     ) : (
                       <button
                         onClick={() => handleEdit(item.id)}
-                        className="text-blue-600 hover:text-blue-800 mx-1"
+                        className="text-blue-500 hover:text-blue-700 mr-2"
                       >
-                        <FontAwesomeIcon icon={faPencilAlt} />
+                        <Pencil className="w-5 h-5" />
                       </button>
                     )}
                     <button
                       onClick={() => handleDelete(item.id)}
-                      className="text-red-600 hover:text-red-800 mx-1"
+                      className="text-red-500 hover:text-red-700"
                     >
-                      <FontAwesomeIcon icon={faTrash} />
+                      <Trash2 className="w-5 h-5" />
                     </button>
                   </td>
                 </tr>
