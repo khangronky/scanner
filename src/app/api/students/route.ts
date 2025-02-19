@@ -2,10 +2,26 @@ import { NextResponse } from "next/server";
 import connectDB from "@/lib/db";
 import { Student } from "@/lib/models/Student";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const startDate = searchParams.get("startDate");
+    const endDate = searchParams.get("endDate");
+
     await connectDB();
-    const students = await Student.find();
+
+    let query = {};
+
+    if (startDate || endDate) {
+      query = {
+        createdAt: {
+          ...(startDate && { $gte: new Date(startDate) }),
+          ...(endDate && { $lte: new Date(endDate) }),
+        },
+      };
+    }
+
+    const students = await Student.find(query).sort({ createdAt: -1 });
     return NextResponse.json({ students });
   } catch (error) {
     console.error(error);

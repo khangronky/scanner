@@ -13,6 +13,7 @@ export default function Page() {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
   const [students, setStudents] = useState<IStudent[]>([]);
+  const [filteredStudents, setFilteredStudents] = useState<IStudent[]>([]);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
@@ -26,13 +27,66 @@ export default function Page() {
   useEffect(() => {
     const storedStudents = localStorage.getItem("students");
     if (storedStudents) {
-      setStudents(JSON.parse(storedStudents));
+      const parsedStudents = JSON.parse(storedStudents).map(
+        (student: {
+          id: string;
+          name: string;
+          studentNumber: string;
+          program: string;
+          timestamp: string;
+        }) => ({
+          ...student,
+          timestamp: new Date(student.timestamp),
+        })
+      );
+      setStudents(
+        parsedStudents.sort(
+          (a: IStudent, b: IStudent) =>
+            b.timestamp.getTime() - a.timestamp.getTime()
+        )
+      );
+      setFilteredStudents(
+        parsedStudents.sort(
+          (a: IStudent, b: IStudent) =>
+            b.timestamp.getTime() - a.timestamp.getTime()
+        )
+      );
     }
   }, []);
 
   useEffect(() => {
     localStorage.setItem("students", JSON.stringify(students));
   }, [students]);
+
+  const handleDateRangeApply = (
+    startDate: Date | null,
+    endDate: Date | null
+  ) => {
+    if (!startDate && !endDate) {
+      setFilteredStudents(
+        [...students].sort(
+          (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
+        )
+      );
+      return;
+    }
+
+    const filtered = students.filter((student) => {
+      const studentDate = new Date(student.timestamp);
+      if (startDate && endDate) {
+        return studentDate >= startDate && studentDate <= endDate;
+      } else if (startDate) {
+        return studentDate >= startDate;
+      } else if (endDate) {
+        return studentDate <= endDate;
+      }
+      return true;
+    });
+
+    setFilteredStudents(
+      filtered.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
+    );
+  };
 
   const createStudentRecord = (studentData: {
     name: string;
@@ -180,7 +234,7 @@ export default function Page() {
 
       <div className="flex-1 md:w-1/2 p-2">
         <StudentList
-          students={students}
+          students={filteredStudents}
           editID={editID}
           editStudentNumber={editStudentNumber}
           editName={editName}
@@ -192,6 +246,7 @@ export default function Page() {
           handleEdit={handleEdit}
           handleSave={handleSave}
           handleDelete={handleDelete}
+          handleDateRangeApply={handleDateRangeApply}
         />
         <AddStudentModal
           isOpen={isModalOpen}

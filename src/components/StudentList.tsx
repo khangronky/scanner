@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import { Pencil, Trash2, Save } from "lucide-react";
 import { IStudent } from "@/lib/models/Student";
+import { DatePicker } from "./DatePicker";
+import { Button } from "./ui/button";
 
 interface StudentListProps {
   students: IStudent[];
@@ -15,6 +17,7 @@ interface StudentListProps {
   handleEdit: (id: string) => void;
   handleSave: () => void;
   handleDelete: (id: string) => void;
+  handleDateRangeApply?: (startDate: Date | null, endDate: Date | null) => void;
 }
 
 const StudentList: React.FC<StudentListProps> = ({
@@ -30,9 +33,12 @@ const StudentList: React.FC<StudentListProps> = ({
   handleEdit,
   handleSave,
   handleDelete,
+  handleDateRangeApply,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [startDate, setStartDate] = useState<Date | null>(null);
+  const [endDate, setEndDate] = useState<Date | null>(null);
   const itemsPerPage = 10;
 
   const filteredItems = students.filter((item) => {
@@ -68,7 +74,14 @@ const StudentList: React.FC<StudentListProps> = ({
 
   const exportToCSV = () => {
     const headers = ["Name", "Student Number", "Program", "Timestamp"];
+
+    const formatDate = (date: Date | null) => {
+      return date ? date.toISOString().split("T")[0] : "";
+    };
+
     const csvRows = [
+      `Date Range: ${startDate ? formatDate(startDate) : "Previous"} 
+      to ${endDate ? formatDate(endDate) : "Now"}`,
       headers.join(","),
       ...students.map(
         (item) =>
@@ -81,9 +94,12 @@ const StudentList: React.FC<StudentListProps> = ({
     const csvString = csvRows.join("\n");
     const blob = new Blob([csvString], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
+    const timestamp = new Date().toISOString().split("T")[0].replace(/-/g, "");
+    const filename = `students-${timestamp}.csv`;
     const a = document.createElement("a");
+
     a.setAttribute("href", url);
-    a.setAttribute("download", "students.csv");
+    a.setAttribute("download", filename);
     a.click();
     URL.revokeObjectURL(url);
   };
@@ -111,6 +127,50 @@ const StudentList: React.FC<StudentListProps> = ({
           >
             Export to CSV
           </button>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">Start Date:</span>
+          <DatePicker
+            date={startDate}
+            setDate={setStartDate}
+            placeholder="Select start date"
+          />
+        </div>
+        <div className="flex items-center gap-2">
+          <span className="text-sm font-medium">End Date:</span>
+          <DatePicker
+            date={endDate}
+            setDate={setEndDate}
+            placeholder="Select end date"
+          />
+        </div>
+        <div className="flex gap-2">
+          <Button
+            onClick={() => {
+              setStartDate(null);
+              setEndDate(null);
+              if (handleDateRangeApply) {
+                handleDateRangeApply(null, null);
+              }
+            }}
+            variant="outline"
+          >
+            Clear
+          </Button>
+          <Button
+            onClick={() => {
+              if (handleDateRangeApply) {
+                handleDateRangeApply(startDate, endDate);
+              }
+            }}
+            className="bg-[#4896ac] hover:bg-[#326979] text-white"
+            disabled={!startDate && !endDate}
+          >
+            Apply
+          </Button>
         </div>
       </div>
 

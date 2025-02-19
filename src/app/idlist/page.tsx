@@ -21,38 +21,61 @@ const IDList: React.FC = () => {
   const [editProgram, setEditProgram] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const fetchStudents = useCallback(async () => {
-    try {
-      const { data } = await axios.get(`${apiUrl}/api/students`);
-      const students: IStudent[] = data.students.map(
-        (student: {
-          _id: string;
-          name: string;
-          studentNumber: string;
-          program: string;
-          createdAt: Date;
-        }) => ({
-          id: student._id,
-          name: student.name,
-          studentNumber: student.studentNumber,
-          program: student.program,
-          timestamp: new Date(student.createdAt),
-        })
-      );
-      setStudents(students);
-    } catch (error) {
-      if (process.env.NODE_ENV === "development") {
-        console.error(error);
+  const fetchStudents = useCallback(
+    async (startDate?: Date | null, endDate?: Date | null) => {
+      try {
+        const params = new URLSearchParams();
+        if (startDate) {
+          params.append("startDate", startDate.toISOString());
+        }
+        if (endDate) {
+          params.append("endDate", endDate.toISOString());
+        }
+
+        const { data } = await axios.get(
+          `${apiUrl}/api/students${
+            params.toString() ? `?${params.toString()}` : ""
+          }`
+        );
+        const students: IStudent[] = data.students.map(
+          (student: {
+            _id: string;
+            name: string;
+            studentNumber: string;
+            program: string;
+            createdAt: Date;
+          }) => ({
+            id: student._id,
+            name: student.name,
+            studentNumber: student.studentNumber,
+            program: student.program,
+            timestamp: new Date(student.createdAt),
+          })
+        );
+
+        setStudents(students);
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(error);
+        }
+        setError("Failed to fetch students");
+      } finally {
+        setLoading(false);
       }
-      setError("Failed to fetch students");
-    } finally {
-      setLoading(false);
-    }
-  }, [apiUrl]);
+    },
+    [apiUrl]
+  );
 
   useEffect(() => {
     fetchStudents();
   }, [fetchStudents]);
+
+  const handleDateRangeApply = (
+    startDate: Date | null,
+    endDate: Date | null
+  ) => {
+    fetchStudents(startDate, endDate);
+  };
 
   const createStudentRecord = (studentData: {
     name: string;
@@ -179,6 +202,7 @@ const IDList: React.FC = () => {
         handleEdit={handleEdit}
         handleSave={handleSave}
         handleDelete={handleDelete}
+        handleDateRangeApply={handleDateRangeApply}
       />
       <AddStudentModal
         isOpen={isModalOpen}
