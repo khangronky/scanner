@@ -192,7 +192,7 @@ const IDList: React.FC = () => {
       <div className="flex justify-center mt-4">
         <Link href="/">
           <button className="bg-[#4896ac] hover:bg-[#326979] text-white px-4 py-2 rounded-lg">
-            Back to ID Fetch
+            Back to Capture Page
           </button>
         </Link>
       </div>
