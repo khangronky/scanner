@@ -156,26 +156,6 @@ const IDList: React.FC = () => {
     }
   };
 
-  const exportToCSV = () => {
-    const headers = ["Name", "Student Number", "Program", "Timestamp"];
-    const csvRows = [
-      headers.join(","),
-      ...students.map(
-        (item) =>
-          `${item.name},${item.studentNumber},${item.program},${item.timestamp}`
-      ),
-    ];
-
-    const csvString = csvRows.join("\n");
-    const blob = new Blob([csvString], { type: "text/csv" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.setAttribute("href", url);
-    a.setAttribute("download", "AllStudents.csv");
-    a.click();
-    URL.revokeObjectURL(url);
-  };
-
   if (loading) {
     return <div className="p-4 text-center">Loading students...</div>;
   }
@@ -195,11 +175,10 @@ const IDList: React.FC = () => {
         setEditName={setEditName}
         setEditStudentNumber={setEditStudentNumber}
         setEditProgram={setEditProgram}
+        handleAdd={() => setIsModalOpen(true)}
         handleEdit={handleEdit}
         handleSave={handleSave}
         handleDelete={handleDelete}
-        exportToCSV={exportToCSV}
-        handleAdd={() => setIsModalOpen(true)}
       />
       <AddStudentModal
         isOpen={isModalOpen}

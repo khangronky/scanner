@@ -16,11 +16,10 @@ interface StudentListProps {
   setEditName: (name: string) => void;
   setEditStudentNumber: (number: string) => void;
   setEditProgram: (program: string) => void;
+  handleAdd: () => void;
   handleEdit: (id: string) => void;
   handleSave: () => void;
   handleDelete: (id: string) => void;
-  exportToCSV: () => void;
-  handleAdd: () => void;
 }
 
 const StudentList: React.FC<StudentListProps> = ({
@@ -32,11 +31,10 @@ const StudentList: React.FC<StudentListProps> = ({
   setEditName,
   setEditStudentNumber,
   setEditProgram,
+  handleAdd,
   handleEdit,
   handleSave,
   handleDelete,
-  exportToCSV,
-  handleAdd,
 }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -71,6 +69,28 @@ const StudentList: React.FC<StudentListProps> = ({
     if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
+  };
+
+  const exportToCSV = () => {
+    const headers = ["Name", "Student Number", "Program", "Timestamp"];
+    const csvRows = [
+      headers.join(","),
+      ...students.map(
+        (item) =>
+          `${item.name},${item.studentNumber},${
+            item.program
+          },"${item.timestamp.toLocaleString()}"`
+      ),
+    ];
+
+    const csvString = csvRows.join("\n");
+    const blob = new Blob([csvString], { type: "text/csv" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.setAttribute("href", url);
+    a.setAttribute("download", "students.csv");
+    a.click();
+    URL.revokeObjectURL(url);
   };
 
   return (
