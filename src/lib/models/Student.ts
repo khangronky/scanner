@@ -5,7 +5,7 @@ export interface IStudent {
   name: string;
   studentNumber: string;
   program: string;
-  timestamp: string;
+  timestamp: Date;
 }
 
 const studentSchema = new mongoose.Schema<IStudent>(

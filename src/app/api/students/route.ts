@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       name,
       studentNumber,
       program,
-      createdAt: new Date(timestamp),
+      createdAt: timestamp,
     });
 
     return NextResponse.json({ student });

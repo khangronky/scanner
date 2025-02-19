@@ -30,13 +30,13 @@ const IDList: React.FC = () => {
           name: string;
           studentNumber: string;
           program: string;
-          createdAt: string;
+          createdAt: Date;
         }) => ({
           id: student._id,
           name: student.name,
           studentNumber: student.studentNumber,
           program: student.program,
-          timestamp: student.createdAt,
+          timestamp: new Date(student.createdAt),
         })
       );
       setStudents(students);
@@ -64,7 +64,7 @@ const IDList: React.FC = () => {
       name: studentData.name.trim(),
       studentNumber: studentData.studentNumber.trim(),
       program: studentData.program ? studentData.program.trim() : "",
-      timestamp: new Date().toLocaleString(),
+      timestamp: new Date(),
     };
   };
 
@@ -112,11 +112,15 @@ const IDList: React.FC = () => {
   const handleSave = async () => {
     if (editID === null) return;
 
-    const updatedStudent = createStudentRecord({
+    const oldStudent = students.find((s) => s.id === editID);
+    if (!oldStudent) return;
+
+    const updatedStudent = {
+      ...oldStudent,
       name: editName,
       studentNumber: editStudentNumber,
       program: editProgram,
-    });
+    };
 
     try {
       await axios.put(`${apiUrl}/api/students/${editID}`, updatedStudent);

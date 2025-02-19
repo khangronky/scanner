@@ -44,7 +44,7 @@ export default function Page() {
       name: studentData.name.trim(),
       studentNumber: studentData.studentNumber.trim(),
       program: studentData.program ? studentData.program.trim() : "",
-      timestamp: new Date().toLocaleString(),
+      timestamp: new Date(),
     };
   };
 
@@ -98,18 +98,22 @@ export default function Page() {
   };
 
   const handleSave = () => {
-    if (editStudentNumber === null) return;
+    if (editID === null) return;
 
-    const updatedStudent = createStudentRecord({
+    const oldStudent = students.find((s) => s.id === editID);
+    if (!oldStudent) return;
+
+    const updatedStudent = {
+      ...oldStudent,
       name: editName,
       studentNumber: editStudentNumber,
       program: editProgram,
-    });
+    };
 
-    const updatedList = students.map((student) =>
+    const updatedStudents = students.map((student) =>
       student.id === editID ? updatedStudent : student
     );
-    setStudents(updatedList);
+    setStudents(updatedStudents);
 
     setEditID(null);
     setEditName("");
@@ -118,8 +122,8 @@ export default function Page() {
   };
 
   const handleDelete = (id: string) => {
-    const updatedList = students.filter((s) => s.id !== id);
-    setStudents(updatedList);
+    const updatedStudents = students.filter((s) => s.id !== id);
+    setStudents(updatedStudents);
   };
 
   const exportToCSV = () => {

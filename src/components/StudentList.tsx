@@ -175,7 +175,9 @@ const StudentList: React.FC<StudentListProps> = ({
                       item.program
                     )}
                   </td>
-                  <td className="py-2 px-4">{item.timestamp}</td>
+                  <td className="py-2 px-4">
+                    {item.timestamp.toLocaleString()}
+                  </td>
                   <td className="py-2 px-4 text-center">
                     {editID === item.id ? (
                       <button
