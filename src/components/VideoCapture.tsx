@@ -101,9 +101,6 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
 
   return (
     <>
-      <h2 className="text-xl text-center font-semibold text-gray-800 mb-2">
-        Student ID Here
-      </h2>
       <div className="relative">
         <video
           ref={videoRef}
