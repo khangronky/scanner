@@ -94,8 +94,15 @@ const StudentList: React.FC<StudentListProps> = ({
     const csvString = csvRows.join("\n");
     const blob = new Blob([csvString], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
-    const timestamp = new Date().toISOString().split("T")[0].replace(/-/g, "");
-    const filename = `students-${timestamp}.csv`;
+    const timestamp = new Date().toLocaleString("en-US", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit",
+    });
+    const filename = `${timestamp}.csv`;
     const a = document.createElement("a");
 
     a.setAttribute("href", url);
