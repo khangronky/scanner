@@ -58,7 +58,7 @@ const IDList: React.FC = () => {
     name: string;
     studentNumber: string;
     program: string;
-  }) => {
+  }): IStudent => {
     return {
       id: uuidv4(),
       name: studentData.name.trim(),
@@ -86,9 +86,11 @@ const IDList: React.FC = () => {
 
     try {
       await axios.post(`${apiUrl}/api/students`, newStudent);
+
+      setStudents([...students, newStudent]);
+
       setAddError(null);
       setIsModalOpen(false);
-      await fetchStudents();
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error(error);
@@ -118,11 +120,16 @@ const IDList: React.FC = () => {
 
     try {
       await axios.put(`${apiUrl}/api/students/${editID}`, updatedStudent);
+
+      const updatedStudents = students.map((student) =>
+        student.id === editID ? updatedStudent : student
+      );
+      setStudents(updatedStudents);
+
       setEditID(null);
       setEditName("");
       setEditStudentNumber("");
       setEditProgram("");
-      await fetchStudents();
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error(error);
@@ -134,7 +141,9 @@ const IDList: React.FC = () => {
   const handleDelete = async (id: string) => {
     try {
       await axios.delete(`${apiUrl}/api/students/${id}`);
-      await fetchStudents();
+
+      const updatedStudents = students.filter((student) => student.id !== id);
+      setStudents(updatedStudents);
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error(error);

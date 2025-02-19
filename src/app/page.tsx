@@ -80,10 +80,9 @@ export default function Page() {
       return;
     }
 
-    setStudents([
-      ...students,
-      createStudentRecord({ name, studentNumber, program }),
-    ]);
+    const newStudent = createStudentRecord({ name, studentNumber, program });
+    setStudents([...students, newStudent]);
+
     setAddError("");
     setIsModalOpen(false);
   };
@@ -101,17 +100,17 @@ export default function Page() {
   const handleSave = () => {
     if (editStudentNumber === null) return;
 
-    const updatedList = students.map((student) =>
-      student.id === editID
-        ? createStudentRecord({
-            name: editName,
-            studentNumber: editStudentNumber,
-            program: editProgram,
-          })
-        : student
-    );
+    const updatedStudent = createStudentRecord({
+      name: editName,
+      studentNumber: editStudentNumber,
+      program: editProgram,
+    });
 
+    const updatedList = students.map((student) =>
+      student.id === editID ? updatedStudent : student
+    );
     setStudents(updatedList);
+
     setEditID(null);
     setEditName("");
     setEditStudentNumber("");
