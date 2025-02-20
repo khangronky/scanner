@@ -21,7 +21,7 @@ export async function GET(request: Request) {
       };
     }
 
-    const students = await Student.find(query).sort({ createdAt: -1 });
+    const students = await Student.find(query);
     return NextResponse.json({ students });
   } catch (error) {
     console.error(error);

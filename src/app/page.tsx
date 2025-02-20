@@ -27,49 +27,38 @@ export default function Page() {
   useEffect(() => {
     const storedStudents = localStorage.getItem("students");
     if (storedStudents) {
-      const parsedStudents = JSON.parse(storedStudents).map(
-        (student: {
-          id: string;
-          name: string;
-          studentNumber: string;
-          program: string;
-          timestamp: string;
-        }) => ({
-          ...student,
-          timestamp: new Date(student.timestamp),
-        })
-      );
-      setStudents(
-        parsedStudents.sort(
-          (a: IStudent, b: IStudent) =>
-            b.timestamp.getTime() - a.timestamp.getTime()
-        )
-      );
-      setFilteredStudents(
-        parsedStudents.sort(
-          (a: IStudent, b: IStudent) =>
-            b.timestamp.getTime() - a.timestamp.getTime()
-        )
-      );
+      try {
+        const parsedStudents = JSON.parse(storedStudents).map(
+          (student: {
+            id: string;
+            name: string;
+            studentNumber: string;
+            program: string;
+            timestamp: string;
+          }) => ({
+            ...student,
+            timestamp: new Date(student.timestamp),
+          })
+        );
+        if (parsedStudents.length > 0) {
+          setStudents(parsedStudents);
+        }
+      } catch (error) {
+        console.error("Error parsing stored students:", error);
+      }
     }
   }, []);
 
   useEffect(() => {
     localStorage.setItem("students", JSON.stringify(students));
+    setFilteredStudents(students);
   }, [students]);
 
   const handleDateRangeApply = (
     startDate: Date | null,
     endDate: Date | null
   ) => {
-    if (!startDate && !endDate) {
-      setFilteredStudents(
-        [...students].sort(
-          (a, b) => b.timestamp.getTime() - a.timestamp.getTime()
-        )
-      );
-      return;
-    }
+    if (!startDate && !endDate) return;
 
     const filtered = students.filter((student) => {
       const studentDate = new Date(student.timestamp);
@@ -83,9 +72,7 @@ export default function Page() {
       return true;
     });
 
-    setFilteredStudents(
-      filtered.sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
-    );
+    setFilteredStudents(filtered);
   };
 
   const createStudentRecord = (studentData: {

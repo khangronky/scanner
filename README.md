@@ -1,5 +1,7 @@
 # NEO ID Scanner
 
+![Capture Page](./public/capture-page.jpg)
+
 This project is a web application for capturing ID information using a webcam.
 
 ## Project Setup
@@ -42,7 +44,14 @@ This project is a web application for capturing ID information using a webcam.
    npm run dev
    ```
 
-2. **Open in Browser**:
+2. **Start the OCR Service**:
+   Run the following command:
+
+   ```bash
+   npm run ocr:start
+   ```
+
+3. **Open in Browser**:
    After starting the application, open your web browser and navigate to:
 
    ```bash

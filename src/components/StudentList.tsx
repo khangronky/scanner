@@ -39,7 +39,6 @@ const StudentList: React.FC<StudentListProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
-  const itemsPerPage = 10;
 
   const filteredItems = students.filter((item) => {
     const nameMatch = item.name
@@ -54,8 +53,13 @@ const StudentList: React.FC<StudentListProps> = ({
     return nameMatch || studentNumberMatch || programMatch;
   });
 
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
-  const currentItems = filteredItems.slice(
+  const sortedItems = filteredItems.sort((a, b) => {
+    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime();
+  });
+
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(sortedItems.length / itemsPerPage);
+  const currentItems = sortedItems.slice(
     (currentPage - 1) * itemsPerPage,
     currentPage * itemsPerPage
   );
