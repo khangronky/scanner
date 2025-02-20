@@ -103,27 +103,31 @@ export default function Page() {
   };
 
   const handleNewStudent = (name: string, studentNumber: string) => {
-    const existingEntryIndex = students.findIndex(
+    const oldStudent = students.find(
       (item) => item.studentNumber.trim() === studentNumber.trim()
     );
 
-    if (existingEntryIndex !== -1) {
-      const updatedList = [...students];
-      updatedList[existingEntryIndex] = {
-        ...createStudentRecord({
-          name,
-          studentNumber,
-          program: students[existingEntryIndex].program,
-        }),
-        id: students[existingEntryIndex].id,
+    if (oldStudent) {
+      const updatedStudent = {
+        ...oldStudent,
+        name: name,
+        studentNumber: studentNumber,
       };
-      setStudents(updatedList);
+      setStudents(
+        students.map((student) =>
+          student.id === oldStudent.id ? updatedStudent : student
+        )
+      );
+
       setCaptureError("");
     } else {
-      setStudents([
-        ...students,
-        createStudentRecord({ name, studentNumber, program: "" }),
-      ]);
+      const newStudent = createStudentRecord({
+        name,
+        studentNumber,
+        program: "",
+      });
+      setStudents([...students, newStudent]);
+
       setCaptureError("");
     }
   };
