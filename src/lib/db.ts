@@ -1,10 +1,7 @@
 import mongoose from "mongoose";
 
-const connectionString = process.env.MONGODB_URI || "";
-
-if (connectionString.length === 0) {
-  throw new Error("Please add MONGODB_URI to .env.local");
-}
+const connectionString =
+  process.env.MONGODB_URI || "mongodb://localhost:27017/neo-id-scanner";
 
 let cachedConnection: typeof mongoose | null = null;
 
