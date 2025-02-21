@@ -14,8 +14,6 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   setError,
   handleNewStudent,
 }) => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
   const [isAutoCapture, setIsAutoCapture] = useState<boolean>(false);
   const [isCameraOn, setIsCameraOn] = useState<boolean>(false);
 
@@ -37,9 +35,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         const imageData = canvasRef.current.toDataURL("image/png");
 
         try {
-          const { data } = await axios.post(`${apiUrl}/api/capture`, {
-            imageData,
-          });
+          const { data } = await axios.post(`/api/capture`, { imageData });
 
           if (data.name && data.studentNumber) {
             handleNewStudent(data.name, data.studentNumber);
@@ -50,7 +46,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         }
       }
     }
-  }, [apiUrl, handleNewStudent, setError]);
+  }, [handleNewStudent, setError]);
 
   useEffect(() => {
     if (isCameraOn) {

@@ -9,8 +9,6 @@ import AddStudentModal from "@/components/AddStudentModal";
 import Link from "next/link";
 
 const IDList: React.FC = () => {
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
   const [students, setStudents] = useState<IStudent[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -33,9 +31,7 @@ const IDList: React.FC = () => {
         }
 
         const { data } = await axios.get(
-          `${apiUrl}/api/students${
-            params.toString() ? `?${params.toString()}` : ""
-          }`
+          `/api/students${params.toString() ? `?${params.toString()}` : ""}`
         );
         const students: IStudent[] = data.students.map(
           (student: {
@@ -63,11 +59,11 @@ const IDList: React.FC = () => {
         setLoading(false);
       }
     },
-    [apiUrl]
+    []
   );
 
   useEffect(() => {
-    fetchStudents();
+    fetchStudents(null, null);
   }, [fetchStudents]);
 
   const handleDateRangeApply = (
@@ -108,7 +104,7 @@ const IDList: React.FC = () => {
     });
 
     try {
-      await axios.post(`${apiUrl}/api/students`, newStudent);
+      await axios.post(`/api/students`, newStudent);
 
       setStudents([...students, newStudent]);
 
@@ -146,7 +142,7 @@ const IDList: React.FC = () => {
     };
 
     try {
-      await axios.put(`${apiUrl}/api/students/${editID}`, updatedStudent);
+      await axios.put(`/api/students/${editID}`, updatedStudent);
 
       const updatedStudents = students.map((student) =>
         student.id === editID ? updatedStudent : student
@@ -167,7 +163,7 @@ const IDList: React.FC = () => {
 
   const handleDelete = async (id: string) => {
     try {
-      await axios.delete(`${apiUrl}/api/students/${id}`);
+      await axios.delete(`/api/students/${id}`);
 
       const updatedStudents = students.filter((student) => student.id !== id);
       setStudents(updatedStudents);
