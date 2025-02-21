@@ -1,8 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import axios from "axios";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
 vi.mock("axios", () => ({
   default: {
     post: vi.fn(),
@@ -19,7 +17,7 @@ describe("Capture API", () => {
     });
 
     try {
-      await axios.post(`${apiUrl}/api/capture`, {});
+      await axios.post(`/api/capture`, {});
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (error: any) {
       expect(error.response.status).toBe(400);
@@ -37,7 +35,7 @@ describe("Capture API", () => {
 
     vi.mocked(axios.post).mockResolvedValueOnce(mockOcrResponse);
 
-    const response = await axios.post(`${apiUrl}/api/capture`, {
+    const response = await axios.post(`/api/capture`, {
       imageData: "base64-encoded-image",
     });
 
@@ -57,7 +55,7 @@ describe("Capture API", () => {
     });
 
     try {
-      await axios.post(`${apiUrl}/api/capture`, {
+      await axios.post(`/api/capture`, {
         imageData: "base64-encoded-image",
       });
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

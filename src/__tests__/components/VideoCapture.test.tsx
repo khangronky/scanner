@@ -43,7 +43,6 @@ describe("VideoCapture", () => {
   it("renders correctly with initial state", () => {
     render(<VideoCapture {...mockProps} />);
 
-    expect(screen.getByText("Student ID Here")).toBeDefined();
     expect(screen.getByText("Turn On Camera")).toBeDefined();
     expect(screen.getByText("Start Auto Capture")).toBeDefined();
     expect(

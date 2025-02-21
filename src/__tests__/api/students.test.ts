@@ -1,8 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import axios from "axios";
 
-const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-
 vi.mock("axios", () => ({
   default: {
     get: vi.fn(),
@@ -25,9 +23,9 @@ describe("Students API", () => {
         data: { student: mockStudent },
       });
 
-      const { data } = await axios.get(`${apiUrl}/api/students/123`);
+      const { data } = await axios.get(`/api/students/123`);
 
-      expect(axios.get).toHaveBeenCalledWith(`${apiUrl}/api/students/123`);
+      expect(axios.get).toHaveBeenCalledWith(`/api/students/123`);
       expect(data.student).toEqual(mockStudent);
     });
 
@@ -37,7 +35,7 @@ describe("Students API", () => {
         data: { message: "Student not found" },
       });
 
-      const response = await axios.get(`${apiUrl}/api/students/123`);
+      const response = await axios.get(`/api/students/123`);
 
       expect(response.status).toBe(404);
       expect(response.data.message).toBe("Student not found");
@@ -51,13 +49,13 @@ describe("Students API", () => {
         data: { student: updatedStudent },
       });
 
-      const { data } = await axios.put(`${apiUrl}/api/students/123`, {
+      const { data } = await axios.put(`/api/students/123`, {
         name: "Jane Doe",
         studentNumber: "12345",
         program: "Computer Science",
       });
 
-      expect(axios.put).toHaveBeenCalledWith(`${apiUrl}/api/students/123`, {
+      expect(axios.put).toHaveBeenCalledWith(`/api/students/123`, {
         name: "Jane Doe",
         studentNumber: "12345",
         program: "Computer Science",
@@ -71,7 +69,7 @@ describe("Students API", () => {
         data: { message: "Student not found" },
       });
 
-      const response = await axios.put(`${apiUrl}/api/students/123`, {
+      const response = await axios.put(`/api/students/123`, {
         name: "Jane Doe",
         studentNumber: "12345",
         program: "Computer Science",
@@ -88,9 +86,9 @@ describe("Students API", () => {
         data: { message: "Student deleted successfully" },
       });
 
-      const { data } = await axios.delete(`${apiUrl}/api/students/123`);
+      const { data } = await axios.delete(`/api/students/123`);
 
-      expect(axios.delete).toHaveBeenCalledWith(`${apiUrl}/api/students/123`);
+      expect(axios.delete).toHaveBeenCalledWith(`/api/students/123`);
       expect(data.message).toBe("Student deleted successfully");
     });
 
@@ -100,7 +98,7 @@ describe("Students API", () => {
         data: { message: "Student not found" },
       });
 
-      const response = await axios.delete(`${apiUrl}/api/students/123`);
+      const response = await axios.delete(`/api/students/123`);
 
       expect(response.status).toBe(404);
       expect(response.data.message).toBe("Student not found");
