@@ -6,8 +6,8 @@ image = modal.Image.debian_slim().apt_install(
     "libglib2.0-0"
 ).pip_install([
     "fastapi",
-    "opencv-python",
     "numpy",
+    "opencv-python",
     "pytesseract"
 ]).env({"ENVIRONMENT": "production"}).add_local_python_source("main")  
 app = modal.App("ocr-service", image=image)
