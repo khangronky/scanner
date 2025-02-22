@@ -8,7 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "ocr:install": "cd ocr && python -m venv venv && .\\venv\\Scripts\\pip install -r requirements.txt",
-    "ocr:start": "cd ocr && .\\venv\\Scripts\\python main.py",
+    "ocr:dev": "cd ocr && .\\venv\\Scripts\\uvicorn main:app --host 127.0.0.1 --port 5500 --reload",
+    "ocr:start": "cd ocr && .\\venv\\Scripts\\uvicorn main:app --host 127.0.0.1 --port 5500",
+    "ocr:run": "cd ocr && .\\venv\\Scripts\\modal run modal_deployment.py",
+    "ocr:serve": "cd ocr && .\\venv\\Scripts\\modal serve modal_deployment.py",
+    "ocr:deploy": "cd ocr && .\\venv\\Scripts\\modal deploy modal_deployment.py",
     "test": "vitest"
   },
   "dependencies": {

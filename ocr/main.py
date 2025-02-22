@@ -1,17 +1,30 @@
-from flask import Flask, request, jsonify
-from flask_cors import CORS
+import base64
+import os
+import re
+
 import cv2
 import numpy as np
-import re
 import pytesseract
-import base64
 
-# Path to Tesseract executable
-pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
-# Initialize Flask app
-app = Flask(__name__)
-CORS(app)
+# Path to Tesseract executable - for local development
+if os.environ.get('ENVIRONMENT') != 'production':
+    pytesseract.pytesseract.tesseract_cmd = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
+
+# Initialize FastAPI app
+app = FastAPI()
+
+# Configure CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 def preprocess_image(frame):
     """
@@ -68,32 +81,36 @@ def extract_name_from_text(text):
     
     return None
 
-@app.route('/capture', methods=['POST'])
-def capture():
+class Image(BaseModel):
+    imageData: str
+
+@app.post('/capture')
+def capture(image: Image):
     """
     Endpoint to capture an image, process it, and extract ID information.
     """
-    data = request.json
-    if 'imageData' not in data:
-        return jsonify({'error': 'No image data provided'}), 400
+    try: 
+        # Decode the base64 image
+        image_data = image.imageData.split(',')[1]
+        nparr = np.frombuffer(base64.b64decode(image_data), np.uint8)
+        frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
 
-    # Decode the base64 image
-    image_data = data['imageData'].split(',')[1]
-    nparr = np.frombuffer(base64.b64decode(image_data), np.uint8)
-    frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        if frame is None:
+            raise HTTPException(status_code=400, detail="Image could not be decoded")
 
-    if frame is None:
-        return jsonify({'error': 'Image could not be decoded'}), 400
+        # Process the frame and extract text
+        extracted_text = process_frame_for_text(frame)
+        print(extracted_text)
+        id_info = extract_name_from_text(extracted_text)
 
-    # Process the frame and extract text
-    extracted_text = process_frame_for_text(frame)
-    id_info = extract_name_from_text(extracted_text)
-
-    if id_info:
-        name, student_number = id_info
-        return jsonify({'name': name.strip(), 'studentNumber': student_number.strip()}), 200
-    else:
-        return jsonify({'error': 'No match found in the provided ID data'}), 400
-
-if __name__ == "__main__":
-    app.run(host='0.0.0.0', port=5500)
+        if id_info:
+            name, student_number = id_info
+            return {"name": name.strip(), "studentNumber": student_number.strip()}
+        else:
+            raise HTTPException(status_code=400, detail="No match found in the provided ID data")
+            
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+def create_app():
+    return app

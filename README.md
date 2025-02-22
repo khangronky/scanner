@@ -27,7 +27,7 @@ This project is a web application for capturing ID information using a webcam.
 
    Make sure you have the Tesseract OCR installed. This can be found [here](https://github.com/UB-Mannheim/tesseract/wiki)
 
-   After installing Tesseract OCR, ensure that its executable is in: `C:\Program Files\Tesseract-OCR\tesseract.exe`
+   After installing Tesseract OCR, ensure that its executable is in: `C:\ProgramFiles\Tesseract-OCR\tesseract.exe`
 
    Run the following command:
 
@@ -48,7 +48,7 @@ This project is a web application for capturing ID information using a webcam.
    Run the following command:
 
    ```bash
-   npm run ocr:start
+   npm run ocr:dev
    ```
 
 3. **Open in Browser**:

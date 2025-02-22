@@ -1,5 +1,4 @@
+modal
 opencv-python
 pytesseract
-pandas
-Flask
-Flask-Cors
+fastapi[standard]
