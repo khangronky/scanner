@@ -49,7 +49,6 @@ def process_frame(frame):
     """
     # PaddleOCR returns a list of tuples: (bbox, (text, confidence))
     result = ocr.ocr(frame, cls=True)
-    
     # Concatenate all detected text
     extracted_text = '\n'.join([line[1][0] for line in result[0]]) if result[0] else ''
     return extracted_text
@@ -97,7 +96,7 @@ def capture(request: Request):
         image_data = request.imageData.split(',')[1]
         nparr = np.frombuffer(base64.b64decode(image_data), np.uint8)
         frame = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
-
+     
         if frame is None:
             raise HTTPException(status_code=400, detail="Image could not be decoded")
 

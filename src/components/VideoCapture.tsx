@@ -35,8 +35,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
           canvasRef.current.width,
           canvasRef.current.height
         );
-        const imageData = canvasRef.current.toDataURL("image/jpeg");
-
+        const imageData = canvasRef.current.toDataURL("image/webp", 0.5);
         try {
           const { data } = await axios.post(`/api/capture`, { imageData });
 
@@ -123,12 +122,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
           ></div>
         )}
       </div>
-      <canvas
-        ref={canvasRef}
-        width="1280"
-        height="720"
-        className="hidden"
-      ></canvas>
+      <canvas ref={canvasRef} className="hidden"></canvas>
 
       <div className="flex justify-center gap-2 my-4">
         <button

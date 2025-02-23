@@ -1,5 +1,8 @@
 import modal
 
+# Create a volume to store the model
+volume = modal.Volume.from_name("paddle-ocr-models", create_if_missing=True)
+
 # Define base image and system dependencies
 image = (
     modal.Image.debian_slim()
@@ -25,7 +28,8 @@ app = modal.App("ocr-service", image=image)
 @app.function(
     cpu=2,
     memory=2048,
-    keep_warm=1
+    keep_warm=1,
+    volumes={"/root/.paddleocr": volume}
 )
 @modal.asgi_app()
 def fastapi_app():
