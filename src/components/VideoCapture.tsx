@@ -25,6 +25,9 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
     if (canvasRef.current && videoRef.current) {
       const context = canvasRef.current.getContext("2d");
       if (context) {
+        canvasRef.current.width = 640;
+        canvasRef.current.height = 360;
+
         context.drawImage(
           videoRef.current,
           0,
@@ -32,7 +35,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
           canvasRef.current.width,
           canvasRef.current.height
         );
-        const imageData = canvasRef.current.toDataURL("image/png");
+        const imageData = canvasRef.current.toDataURL("image/jpeg");
 
         try {
           const { data } = await axios.post(`/api/capture`, { imageData });
