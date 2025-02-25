@@ -1,3 +1,4 @@
+import asyncio
 import base64
 import cv2
 import numpy as np
@@ -38,22 +39,20 @@ def preprocess_frame(frame):
     # Apply Gaussian blur to reduce noise
     blurred = cv2.GaussianBlur(gray, (5, 5), 0)
     # Apply adaptive thresholding
-    thresh = cv2.adaptiveThreshold(blurred, 255, 
-                                   cv2.ADAPTIVE_THRESH_GAUSSIAN_C, 
-                                   cv2.THRESH_BINARY, 11, 2)
+    thresh = cv2.adaptiveThreshold(blurred, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
     return thresh
 
-def process_frame(frame):
+async def process_frame(frame):
     """
     Processes the image and extracts text using Tesseract OCR.
     """
     # PaddleOCR returns a list of tuples: (bbox, (text, confidence))
-    result = ocr.ocr(frame, cls=True)
+    result = await asyncio.to_thread(ocr.ocr, frame, cls=True)
     # Concatenate all detected text
     extracted_text = '\n'.join([line[1][0] for line in result[0]]) if result[0] else ''
     return extracted_text
 
-def extract_info(text):
+async def extract_info(text):
     """
     Extracts name and student number from the extracted text.
     Updated to remove specified keywords and months before processing.
@@ -87,7 +86,7 @@ class Request(BaseModel):
     imageData: str
 
 @app.post('/capture')
-def capture(request: Request):
+async def capture(request: Request):
     """
     Endpoint to capture an image, process it, and extract ID information.
     """
@@ -101,8 +100,8 @@ def capture(request: Request):
             raise HTTPException(status_code=400, detail="Image could not be decoded")
 
         # Process the frame and extract text
-        extracted_text = process_frame(frame)
-        info = extract_info(extracted_text)
+        extracted_text = await process_frame(frame)
+        info = await extract_info(extracted_text)
 
         if info:
             name, student_number = info
