@@ -52,7 +52,7 @@ async def process_frame(frame):
     extracted_text = '\n'.join([line[1][0] for line in result[0]]) if result[0] else ''
     return extracted_text
 
-async def extract_info(text):
+def extract_info(text):
     """
     Extracts name and student number from the extracted text.
     Updated to remove specified keywords and months before processing.
@@ -101,7 +101,7 @@ async def capture(request: Request):
 
         # Process the frame and extract text
         extracted_text = await process_frame(frame)
-        info = await extract_info(extracted_text)
+        info = extract_info(extracted_text)
 
         if info:
             name, student_number = info
