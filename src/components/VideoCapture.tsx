@@ -18,8 +18,8 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   const [isCameraOn, setIsCameraOn] = useState<boolean>(false);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const streamRef = useRef<MediaStream | null>(null);
 
   const captureFrame = useCallback(async () => {
     if (canvasRef.current && videoRef.current) {
@@ -62,11 +62,9 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
           const stream = await devices.getUserMedia({
             video: { facingMode: "environment" },
           });
-          if (streamRef.current) {
-            streamRef.current = stream;
-          }
           if (videoRef.current) {
             videoRef.current.srcObject = stream;
+            streamRef.current = stream;
           }
         } catch (error) {
           if (process.env.NODE_ENV === "development") {
@@ -78,11 +76,11 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
 
       enableCamera();
     } else {
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-      }
       if (videoRef.current) {
         videoRef.current.srcObject = null;
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
       }
     }
   }, [setError, isCameraOn]);
