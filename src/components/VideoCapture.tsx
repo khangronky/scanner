@@ -17,9 +17,9 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   const [isAutoCapture, setIsAutoCapture] = useState<boolean>(false);
   const [isCameraOn, setIsCameraOn] = useState<boolean>(false);
 
-  const videoRef = useRef<HTMLVideoElement | null>(null);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
 
   const captureFrame = useCallback(async () => {
     if (canvasRef.current && videoRef.current) {
@@ -35,7 +35,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
           canvasRef.current.width,
           canvasRef.current.height
         );
-        const imageData = canvasRef.current.toDataURL("image/webp", 0.5);
+        const imageData = canvasRef.current.toDataURL("image/webp");
         try {
           const { data } = await axios.post(`/api/capture`, { imageData });
 
@@ -52,26 +52,37 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
 
   useEffect(() => {
     if (isCameraOn) {
-      navigator.mediaDevices
-        .getUserMedia({ video: { facingMode: "environment" } })
-        .then((stream) => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
+      const enableCamera = async () => {
+        try {
+          const devices = navigator.mediaDevices;
+          if (!devices) {
+            throw new Error("No media devices found");
+          }
+
+          const stream = await devices.getUserMedia({
+            video: { facingMode: "environment" },
+          });
+          if (streamRef.current) {
             streamRef.current = stream;
           }
-        })
-        .catch((error) => {
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+          }
+        } catch (error) {
           if (process.env.NODE_ENV === "development") {
             console.error(error);
           }
           setError("Can not access the webcam.");
-        });
+        }
+      };
+
+      enableCamera();
     } else {
       if (streamRef.current) {
         streamRef.current.getTracks().forEach((track) => track.stop());
-        if (videoRef.current) {
-          videoRef.current.srcObject = null;
-        }
+      }
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
       }
     }
   }, [setError, isCameraOn]);
