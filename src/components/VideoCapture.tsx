@@ -67,15 +67,14 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
     if (canvasRef.current && videoRef.current) {
       const context = canvasRef.current.getContext("2d");
       if (context) {
-        canvasRef.current.width = 640;
-        canvasRef.current.height = 360;
-
+        canvasRef.current.width = videoRef.current.videoWidth;
+        canvasRef.current.height = videoRef.current.videoHeight;
         context.drawImage(
           videoRef.current,
           0,
           0,
-          canvasRef.current.width,
-          canvasRef.current.height
+          videoRef.current.videoWidth,
+          videoRef.current.videoHeight
         );
         const imageData = canvasRef.current.toDataURL("image/webp");
         try {
@@ -110,13 +109,13 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
 
   return (
     <>
-      <div className="relative">
+      <div className="relative aspect-video">
         <video
           ref={videoRef}
           autoPlay
           playsInline
           muted
-          className="w-full rounded-lg shadow-md border border-gray-300"
+          className="w-full h-full object-cover rounded-lg shadow-md border border-gray-300"
         ></video>
 
         {cameraOn && (
