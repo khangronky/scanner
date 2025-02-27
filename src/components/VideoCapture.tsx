@@ -14,12 +14,54 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   setError,
   handleNewStudent,
 }) => {
-  const [isAutoCapture, setIsAutoCapture] = useState<boolean>(false);
-  const [isCameraOn, setIsCameraOn] = useState<boolean>(false);
+  const [autoCapture, setAutoCapture] = useState<boolean>(false);
+  const [cameraOn, setCameraOn] = useState<boolean>(false);
 
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+
+  const toggleCamera = async () => {
+    if (!cameraOn) {
+      try {
+        const devices = navigator.mediaDevices;
+        if (!devices) {
+          throw new Error("No media devices found");
+        }
+
+        const stream = await devices.getUserMedia({
+          video: { facingMode: "environment" },
+        });
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+          streamRef.current = stream;
+        }
+
+        setCameraOn(true);
+      } catch (error) {
+        if (process.env.NODE_ENV === "development") {
+          console.error(error);
+        }
+        setError("Can not access the webcam.");
+      }
+    } else {
+      if (videoRef.current) {
+        videoRef.current.srcObject = null;
+      }
+      if (streamRef.current) {
+        streamRef.current.getTracks().forEach((track) => track.stop());
+      }
+      setCameraOn(false);
+    }
+  };
+
+  const toggleAutoCapture = () => {
+    if (cameraOn) {
+      setAutoCapture((prev) => !prev);
+    } else {
+      setAutoCapture(false);
+    }
+  };
 
   const captureFrame = useCallback(async () => {
     if (canvasRef.current && videoRef.current) {
@@ -51,60 +93,20 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
   }, [handleNewStudent, setError]);
 
   useEffect(() => {
-    if (isCameraOn) {
-      const enableCamera = async () => {
-        try {
-          const devices = navigator.mediaDevices;
-          if (!devices) {
-            throw new Error("No media devices found");
-          }
-
-          const stream = await devices.getUserMedia({
-            video: { facingMode: "environment" },
-          });
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            streamRef.current = stream;
-          }
-        } catch (error) {
-          if (process.env.NODE_ENV === "development") {
-            console.error(error);
-          }
-          setError("Can not access the webcam.");
-        }
-      };
-
-      enableCamera();
-    } else {
-      if (videoRef.current) {
-        videoRef.current.srcObject = null;
-      }
-      if (streamRef.current) {
-        streamRef.current.getTracks().forEach((track) => track.stop());
-      }
+    if (!cameraOn) {
+      setAutoCapture(false);
     }
-  }, [setError, isCameraOn]);
+  }, [cameraOn]);
 
   useEffect(() => {
-    if (isAutoCapture) {
+    if (autoCapture) {
       const intervalId = setInterval(() => {
         captureFrame();
       }, 1000);
 
       return () => clearInterval(intervalId);
     }
-  }, [isAutoCapture, captureFrame]);
-
-  const toggleCamera = () => {
-    setIsCameraOn((prev) => !prev);
-    if (isAutoCapture) {
-      setIsAutoCapture(false);
-    }
-  };
-
-  const toggleAutoCapture = () => {
-    setIsAutoCapture((prevState) => !prevState);
-  };
+  }, [autoCapture, captureFrame]);
 
   return (
     <>
@@ -117,7 +119,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
           className="w-full rounded-lg shadow-md border border-gray-300"
         ></video>
 
-        {isCameraOn && (
+        {cameraOn && (
           <div
             className="absolute border-4 border-red-500"
             style={{
@@ -137,25 +139,25 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
         <button
           onClick={toggleCamera}
           className={`px-4 py-2 rounded-lg font-medium ${
-            isCameraOn
+            cameraOn
               ? "bg-red-500 hover:bg-red-600 text-white"
               : "bg-green-500 hover:bg-green-600 text-white"
           }`}
         >
-          {isCameraOn ? "Turn Off Camera" : "Turn On Camera"}
+          {cameraOn ? "Turn Off Camera" : "Turn On Camera"}
         </button>
         <button
           onClick={toggleAutoCapture}
           className={`px-4 py-2 rounded-lg font-medium ${
-            isCameraOn ? "" : "opacity-50 cursor-not-allowed"
+            !cameraOn && "opacity-50 cursor-not-allowed"
           } ${
-            isAutoCapture
-              ? `bg-red-500 ${isCameraOn && "hover:bg-red-600"} text-white`
-              : `bg-[#4896ac] ${isCameraOn && "hover:bg-[#326979]"} text-white`
+            autoCapture
+              ? `bg-red-500 ${cameraOn && "hover:bg-red-600"} text-white`
+              : `bg-[#4896ac] ${cameraOn && "hover:bg-[#326979]"} text-white`
           } `}
-          disabled={!isCameraOn}
+          disabled={!cameraOn}
         >
-          {isAutoCapture ? "Stop Auto Capture" : "Start Auto Capture"}
+          {autoCapture ? "Stop Auto Capture" : "Start Auto Capture"}
         </button>
       </div>
 
