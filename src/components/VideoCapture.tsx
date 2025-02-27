@@ -127,7 +127,7 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
           ></div>
         )}
       </div>
-      <canvas ref={canvasRef}></canvas>
+      <canvas ref={canvasRef} className="hidden"></canvas>
 
       <div className="flex justify-center gap-2 my-4">
         <button
