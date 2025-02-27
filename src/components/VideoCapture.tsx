@@ -69,13 +69,8 @@ const VideoCapture: React.FC<VideoCaptureProps> = ({
       if (context) {
         canvasRef.current.width = videoRef.current.videoWidth;
         canvasRef.current.height = videoRef.current.videoHeight;
-        context.drawImage(
-          videoRef.current,
-          0,
-          0,
-          videoRef.current.videoWidth,
-          videoRef.current.videoHeight
-        );
+        context.drawImage(videoRef.current, 0, 0);
+
         const imageData = canvasRef.current.toDataURL("image/webp");
         try {
           const { data } = await axios.post(`/api/capture`, { imageData });
