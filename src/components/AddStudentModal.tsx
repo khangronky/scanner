@@ -32,13 +32,13 @@ const AddStudentModal: React.FC<AddStudentModalProps> = ({
   return (
     <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
       <div className="bg-white p-6 rounded-lg w-96">
-        <div className="flex justify-between items-center mb-4">
+        <div className="flex relative justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Add New Student</h2>
           <button
             role="button"
             aria-label="Close"
             onClick={onClose}
-            className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+            className="absolute top-0 right-0 text-gray-500 hover:text-gray-700"
           >
             <X className="w-6 h-6" />
           </button>
