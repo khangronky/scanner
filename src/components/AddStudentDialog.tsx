@@ -28,9 +28,11 @@ const AddStudentDialog: React.FC<AddStudentDialogProps> = ({
 
   const handleAdd = () => {
     onAdd(name, studentNumber, program);
-    setName("");
-    setStudentNumber("");
-    setProgram("");
+    if (!error) {
+      setName("");
+      setStudentNumber("");
+      setProgram("");
+    }
   };
 
   return (

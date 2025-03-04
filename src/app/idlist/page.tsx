@@ -5,7 +5,8 @@ import axios from "axios";
 import { IStudent } from "@/lib/models/Student";
 import { v4 as uuidv4 } from "uuid";
 import StudentList from "@/components/StudentList";
-import AddStudentModal from "@/components/AddStudentDialog";
+import AddStudentDialog from "@/components/AddStudentDialog";
+import { toast } from "@/hooks/use-toast";
 import Link from "next/link";
 
 const IDList: React.FC = () => {
@@ -17,7 +18,7 @@ const IDList: React.FC = () => {
   const [editName, setEditName] = useState<string>("");
   const [editStudentNumber, setEditStudentNumber] = useState<string>("");
   const [editProgram, setEditProgram] = useState<string>("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showOpenDialog, setShowOpenDialog] = useState(false);
 
   const fetchStudents = useCallback(
     async (startDate?: Date | null, endDate?: Date | null) => {
@@ -109,12 +110,17 @@ const IDList: React.FC = () => {
       setStudents([...students, newStudent]);
 
       setAddError(null);
-      setIsModalOpen(false);
+      setShowOpenDialog(false);
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error(error);
       }
-      setAddError("Failed to add student");
+
+      toast({
+        title: "Failed to add student",
+        description: "Please try again",
+        variant: "destructive",
+      });
     }
   };
 
@@ -157,7 +163,12 @@ const IDList: React.FC = () => {
       if (process.env.NODE_ENV === "development") {
         console.error(error);
       }
-      setError("Failed to update student");
+
+      toast({
+        title: "Failed to update student",
+        description: "Please try again",
+        variant: "destructive",
+      });
     }
   };
 
@@ -167,11 +178,21 @@ const IDList: React.FC = () => {
 
       const updatedStudents = students.filter((student) => student.id !== id);
       setStudents(updatedStudents);
+
+      toast({
+        title: "Student Deleted",
+        description: "Student has been deleted successfully",
+      });
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error(error);
       }
-      setError("Failed to delete student");
+
+      toast({
+        title: "Failed to delete student",
+        description: "Please try again",
+        variant: "destructive",
+      });
     }
   };
 
@@ -194,16 +215,16 @@ const IDList: React.FC = () => {
         setEditName={setEditName}
         setEditStudentNumber={setEditStudentNumber}
         setEditProgram={setEditProgram}
-        handleAdd={() => setIsModalOpen(true)}
+        handleAdd={() => setShowOpenDialog(true)}
         handleEdit={handleEdit}
         handleSave={handleSave}
         handleDelete={handleDelete}
         handleDateRangeApply={handleDateRangeApply}
       />
-      <AddStudentModal
-        isOpen={isModalOpen}
+      <AddStudentDialog
+        isOpen={showOpenDialog}
         onClose={() => {
-          setIsModalOpen(false);
+          setShowOpenDialog(false);
           setAddError(null);
         }}
         onAdd={handleAdd}

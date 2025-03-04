@@ -6,6 +6,7 @@ import axios from "axios";
 import VideoCapture from "@/components/VideoCapture";
 import StudentList from "@/components/StudentList";
 import AddStudentDialog from "@/components/AddStudentDialog";
+import { toast } from "@/hooks/use-toast";
 import { IStudent } from "@/lib/models/Student";
 import Link from "next/link";
 import {
@@ -24,13 +25,11 @@ export default function Page() {
   const [filteredStudents, setFilteredStudents] = useState<IStudent[]>([]);
   const [captureError, setCaptureError] = useState<string | null>(null);
   const [addError, setAddError] = useState<string | null>(null);
-  const [uploadError, setUploadError] = useState<string | null>(null);
-  const [uploadSuccess, setUploadSuccess] = useState<string | null>(null);
   const [editID, setEditID] = useState<string | null>(null);
   const [editName, setEditName] = useState<string>("");
   const [editStudentNumber, setEditStudentNumber] = useState<string>("");
   const [editProgram, setEditProgram] = useState<string>("");
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showOpenDialog, setShowOpenDialog] = useState(false);
   const [showClearDialog, setShowClearDialog] = useState(false);
 
   useEffect(() => {
@@ -138,7 +137,7 @@ export default function Page() {
     setStudents([...students, newStudent]);
 
     setAddError("");
-    setIsModalOpen(false);
+    setShowOpenDialog(false);
   };
 
   const handleEdit = (id: string) => {
@@ -178,6 +177,11 @@ export default function Page() {
   const handleDelete = (id: string) => {
     const updatedStudents = students.filter((s) => s.id !== id);
     setStudents(updatedStudents);
+
+    toast({
+      title: "Student Deleted",
+      description: "Student has been deleted successfully",
+    });
   };
 
   const handleClear = () => {
@@ -185,9 +189,6 @@ export default function Page() {
   };
 
   const handleUpload = async () => {
-    setUploadError("");
-    setUploadSuccess("");
-
     const uploadPromises = students.map((student) =>
       axios.post(`/api/students`, {
         name: student.name,
@@ -210,15 +211,22 @@ export default function Page() {
           return result.status === "rejected";
         });
         setStudents(remainingStudents);
-        setUploadSuccess(
-          `Successfully uploaded ${successfulUploads.length} student(s)`
-        );
+
+        toast({
+          title: "Students Uploaded",
+          description: `Successfully uploaded ${successfulUploads.length} student(s)`,
+        });
       }
     } catch (error) {
       if (process.env.NODE_ENV === "development") {
         console.error(error);
       }
-      setUploadError("Failed to upload students to database");
+
+      toast({
+        title: "Failed to upload students to database",
+        description: "Please try again",
+        variant: "destructive",
+      });
     }
   };
 
@@ -242,16 +250,16 @@ export default function Page() {
           setEditName={setEditName}
           setEditStudentNumber={setEditStudentNumber}
           setEditProgram={setEditProgram}
-          handleAdd={() => setIsModalOpen(true)}
+          handleAdd={() => setShowOpenDialog(true)}
           handleEdit={handleEdit}
           handleSave={handleSave}
           handleDelete={handleDelete}
           handleDateRangeApply={handleDateRangeApply}
         />
         <AddStudentDialog
-          isOpen={isModalOpen}
+          isOpen={showOpenDialog}
           onClose={() => {
-            setIsModalOpen(false);
+            setShowOpenDialog(false);
             setAddError(null);
           }}
           onAdd={handleAdd}
@@ -281,12 +289,6 @@ export default function Page() {
             Upload to Database
           </button>
         </div>
-        {uploadError && (
-          <div className="p-4 text-center text-red-500">{uploadError}</div>
-        )}
-        {uploadSuccess && (
-          <div className="p-4 text-center text-green-500">{uploadSuccess}</div>
-        )}
         <div className="flex justify-center mt-4">
           <Link href="/idlist">
             <button className="bg-[#4896ac] hover:bg-[#326979] text-white px-4 py-2 rounded-lg">

@@ -13,6 +13,7 @@ import {
   AlertDialogHeader,
   AlertDialogFooter,
 } from "./ui/alert-dialog";
+import { toast } from "@/hooks/use-toast";
 interface StudentListProps {
   students: IStudent[];
   editID: string | null;
@@ -95,7 +96,7 @@ const StudentList: React.FC<StudentListProps> = ({
     };
 
     const csvRows = [
-      `Date Range: ${startDate ? formatDate(startDate) : "Previous"} 
+      `Date Range: ${startDate ? formatDate(startDate) : "Previous"}
       to ${endDate ? formatDate(endDate) : "Now"}`,
       headers.join(","),
       ...students.map(
@@ -124,6 +125,11 @@ const StudentList: React.FC<StudentListProps> = ({
     a.setAttribute("download", filename);
     a.click();
     URL.revokeObjectURL(url);
+
+    toast({
+      title: "CSV Exported",
+      description: "CSV file has been downloaded successfully",
+    });
   };
 
   return (
