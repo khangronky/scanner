@@ -5,7 +5,7 @@ import axios from "axios";
 import { IStudent } from "@/lib/models/Student";
 import { v4 as uuidv4 } from "uuid";
 import StudentList from "@/components/StudentList";
-import AddStudentModal from "@/components/AddStudentModal";
+import AddStudentModal from "@/components/AddStudentDialog";
 import Link from "next/link";
 
 const IDList: React.FC = () => {

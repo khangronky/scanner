@@ -3,7 +3,16 @@ import { Pencil, Trash2, Save } from "lucide-react";
 import { IStudent } from "@/lib/models/Student";
 import { DatePicker } from "./DatePicker";
 import { Button } from "./ui/button";
-
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogCancel,
+  AlertDialogAction,
+  AlertDialogHeader,
+  AlertDialogFooter,
+} from "./ui/alert-dialog";
 interface StudentListProps {
   students: IStudent[];
   editID: string | null;
@@ -39,6 +48,8 @@ const StudentList: React.FC<StudentListProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const [startDate, setStartDate] = useState<Date | null>(null);
   const [endDate, setEndDate] = useState<Date | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteId, setDeleteId] = useState<string | null>(null);
 
   const filteredItems = students.filter((item) => {
     const nameMatch = item.name
@@ -281,7 +292,10 @@ const StudentList: React.FC<StudentListProps> = ({
                       </button>
                     )}
                     <button
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => {
+                        setShowDeleteDialog(true);
+                        setDeleteId(item.id);
+                      }}
                       className="text-red-500 hover:text-red-700"
                     >
                       <Trash2 className="w-5 h-5" />
@@ -323,6 +337,31 @@ const StudentList: React.FC<StudentListProps> = ({
           </button>
         </div>
       )}
+
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Record</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete this record? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-[#4896ac] hover:bg-[#326979] text-white"
+              onClick={() => {
+                if (deleteId) {
+                  handleDelete(deleteId);
+                }
+              }}
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 };

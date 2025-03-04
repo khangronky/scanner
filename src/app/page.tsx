@@ -5,9 +5,19 @@ import { v4 as uuidv4 } from "uuid";
 import axios from "axios";
 import VideoCapture from "@/components/VideoCapture";
 import StudentList from "@/components/StudentList";
-import AddStudentModal from "@/components/AddStudentModal";
+import AddStudentDialog from "@/components/AddStudentDialog";
 import { IStudent } from "@/lib/models/Student";
 import Link from "next/link";
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+  AlertDialogDescription,
+} from "@/components/ui/alert-dialog";
 
 export default function Page() {
   const [students, setStudents] = useState<IStudent[]>([]);
@@ -21,6 +31,7 @@ export default function Page() {
   const [editStudentNumber, setEditStudentNumber] = useState<string>("");
   const [editProgram, setEditProgram] = useState<string>("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showClearDialog, setShowClearDialog] = useState(false);
 
   useEffect(() => {
     const storedStudents = localStorage.getItem("students");
@@ -237,7 +248,7 @@ export default function Page() {
           handleDelete={handleDelete}
           handleDateRangeApply={handleDateRangeApply}
         />
-        <AddStudentModal
+        <AddStudentDialog
           isOpen={isModalOpen}
           onClose={() => {
             setIsModalOpen(false);
@@ -254,7 +265,7 @@ export default function Page() {
                 : "hover:bg-red-700 transition"
             }`}
             disabled={students.length === 0}
-            onClick={handleClear}
+            onClick={() => setShowClearDialog(true)}
           >
             Clear History
           </button>
@@ -284,6 +295,27 @@ export default function Page() {
           </Link>
         </div>
       </div>
+
+      <AlertDialog open={showClearDialog} onOpenChange={setShowClearDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Clear History</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to clear the history? This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-[#4896ac] hover:bg-[#326979] text-white"
+              onClick={handleClear}
+            >
+              Clear
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

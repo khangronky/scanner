@@ -1,8 +1,8 @@
 import { render, screen, fireEvent, cleanup } from "@testing-library/react";
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import AddStudentModal from "@/components/AddStudentModal";
+import AddStudentDialog from "@/components/AddStudentDialog";
 
-describe("AddStudentModal", () => {
+describe("AddStudentDialog", () => {
   const mockOnAdd = vi.fn();
   const mockOnClose = vi.fn();
 
@@ -12,7 +12,7 @@ describe("AddStudentModal", () => {
 
   it("should not render when isOpen is false", () => {
     render(
-      <AddStudentModal
+      <AddStudentDialog
         isOpen={false}
         onClose={mockOnClose}
         onAdd={mockOnAdd}
@@ -24,7 +24,7 @@ describe("AddStudentModal", () => {
 
   it("should render when isOpen is true", () => {
     render(
-      <AddStudentModal
+      <AddStudentDialog
         isOpen={true}
         onClose={mockOnClose}
         onAdd={mockOnAdd}
@@ -36,7 +36,7 @@ describe("AddStudentModal", () => {
 
   it("should call onAdd with form data when add button is clicked", () => {
     render(
-      <AddStudentModal
+      <AddStudentDialog
         isOpen={true}
         onClose={mockOnClose}
         onAdd={mockOnAdd}
@@ -66,7 +66,7 @@ describe("AddStudentModal", () => {
   it("should display error message when provided", () => {
     const errorMessage = "Error adding student";
     render(
-      <AddStudentModal
+      <AddStudentDialog
         isOpen={true}
         onClose={mockOnClose}
         onAdd={mockOnAdd}
@@ -79,7 +79,7 @@ describe("AddStudentModal", () => {
 
   it("should call onClose when close button is clicked", () => {
     render(
-      <AddStudentModal
+      <AddStudentDialog
         isOpen={true}
         onClose={mockOnClose}
         onAdd={mockOnAdd}
