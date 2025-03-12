@@ -28,7 +28,7 @@ app = modal.App("ocr-service", image=image)
 @app.function(
     cpu=2,
     memory=2048,
-    keep_warm=1,
+    min_containers=1,
     volumes={"/root/.paddleocr": volume}
 )
 @modal.asgi_app()
