@@ -32,7 +32,7 @@ Before you begin, ensure you have the following installed:
 2. **Install Node.js packages**:
 
    ```bash
-   npm install
+   bun install
    ```
 
 3. **Set up environment variables**:
@@ -46,7 +46,7 @@ Before you begin, ensure you have the following installed:
    This will create a virtual environment and install all required Python packages:
 
    ```bash
-   npm run ocr:install
+   bun ocr:install
    ```
 
 ## Running the Project
@@ -54,7 +54,7 @@ Before you begin, ensure you have the following installed:
 1. **Start the Next.js Development Server**:
 
    ```bash
-   npm run dev
+   bun dev
    ```
 
    The application will be available at `http://localhost:3000`
@@ -62,7 +62,7 @@ Before you begin, ensure you have the following installed:
 2. **Start the OCR Service** (Development):
 
    ```bash
-   npm run ocr:dev
+   bun ocr:dev
    ```
 
    The OCR service will run at `http://localhost:5500`
@@ -72,28 +72,28 @@ Before you begin, ensure you have the following installed:
 1. **Deploy OCR Service**:
 
    ```bash
-   npm run ocr:deploy
+   bun ocr:deploy
    ```
 
 2. **Run OCR Service**:
 
    ```bash
-   npm run ocr:run
+   bun ocr:run
    ```
 
 3. **Serve OCR Service**:
 
    ```bash
-   npm run ocr:serve
+   bun ocr:serve
    ```
 
 ## Development Scripts
 
-- `npm run dev` - Start Next.js development server with Turbopack
-- `npm run build` - Build the production application
-- `npm run start` - Start the production server
-- `npm run lint` - Run ESLint
-- `npm test` - Run tests with Vitest
+- `bun run dev` - Start Next.js development server with Turbopack
+- `bun run build` - Build the production application
+- `bun run start` - Start the production server
+- `bun run lint` - Run ESLint
+- `bun test` - Run tests with Vitest
 
 ## Features
 
